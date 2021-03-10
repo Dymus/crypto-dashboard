@@ -3,9 +3,35 @@
     "extends": [
         "tslint:recommended"
     ],
-    "jsRules": {},
-    "rules": {
-        "no-console": false
+    "jsRules": {
+        "max-line-length": [true , 90]
     },
-    "rulesDirectory": []
+    "rules": {
+        "max-line-length": [
+            true,
+            {
+              "limit": 90,
+              "ignore-pattern": "^import |^export {(.*?)}",
+              "check-strings": true,
+              "check-regex": true
+            }
+          ],
+        "no-any": [true, {"ignore-rest-args": true}],
+        "no-non-null-assertion": true,
+        "only-arrow-functions": true,
+        "await-promise": true,
+        "no-duplicate-super": true,
+        "no-duplicate-switch-case": true,
+        "no-duplicate-variable": true,
+        "no-switch-case-fall-through": true,
+        "no-unused-variable": true,
+        "no-use-before-declare": true,
+        "no-default-export": true,
+        "no-require-imports": true,
+        "class-name": true,
+        "arrow-parens": true,
+        "no-irregular-whitespace": true,
+        "no-trailing-whitespace": [true, "ignore-comments"],
+        "no-console": false
+    }
 }
