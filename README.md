@@ -1,6 +1,7 @@
 # crypto-dashboard
 
 run npm i 
+
 run npm start to start the live dev server
 
 run npm run build to conpile to JS
