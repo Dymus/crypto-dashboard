@@ -1,4 +1,4 @@
-# crypto-dashboard
+# Crypto Dashboard
 
 run npm i 
 
