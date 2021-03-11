@@ -26,12 +26,13 @@
         "no-switch-case-fall-through": true,
         "no-unused-variable": true,
         "no-use-before-declare": true,
-        "no-default-export": true,
         "no-require-imports": true,
         "class-name": true,
         "arrow-parens": true,
         "no-irregular-whitespace": true,
         "no-trailing-whitespace": [true, "ignore-comments"],
-        "no-console": false
+        "no-console": false,
+        "variable-name": false,
+        "max-classes-per-file": false
     }
 }
