@@ -4,17 +4,18 @@ import { UserModel } from "../models/user-model";
 import { sign } from "jsonwebtoken";
 import { hashSync } from "bcrypt";
 
-export const getCoinbaseLogin: RequestHandler = async (req, res, next) => {
+export const getBinanceLogin: RequestHandler = async (req, res, next) => {
     console.log("it hit me  ");
     res.redirect(
-        `http://www.coinbase.com/oauth/authorize?response_type=code&client_id=QnF7GOzTUNps2mS24Tuvmp5MWO6lOaNcw8vWhSgw177LrcFed5saXO1vDFFNUnif&redirect_uri=http://localhost:3000/coinbase/redirect&scope=wallet:accounts:read,wallet:sells:read,wallet:buys:read,wallet:deposits:read&account=all`
+        `https://accounts.binance.com/en/oauth/authorize?response_type=code&client_id=QnF7GOzTUNps2mS24Tuvmp5MWO6lOaNcw8vWhSgw177LrcFed5saXO1vDFFNUnif&scope=user:email,user:address&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fbinance%2Fredirect`
     );
 };
 
-export const getCoinbaseRedirect: RequestHandler = async (req, res, next) => {
+export const getBinanceRedirect: RequestHandler = async (req, res, next) => {
+    console.log("kokhoooot");
     return axios
         .post(
-            `https://api.coinbase.com/oauth/token?grant_type=authorization_code&code=${req.query.code}&client_id=QnF7GOzTUNps2mS24Tuvmp5MWO6lOaNcw8vWhSgw177LrcFed5saXO1vDFFNUnif&client_secret=ZnNbLIZtmklnEwnMRtBH4YyjCy2BwTUXX1mQZfiSFV6ktNFG2PxeQEzh1D3E7vOB&redirect_uri=http://localhost:3000/coinbase/redirect`
+            `https://accounts.binance.com/oauth/token?client_id=QnF7GOzTUNps2mS24Tuvmp5MWO6lOaNcw8vWhSgw177LrcFed5saXO1vDFFNUnif&client_secret=ZnNbLIZtmklnEwnMRtBH4YyjCy2BwTUXX1mQZfiSFV6ktNFG2PxeQEzh1D3E7vOB&grant_type=authorization_code&code=${req.query.code}&redirect_uri=http://localhost:3000/binance/redirect`
         )
         .then(
             (response) => {
@@ -22,7 +23,7 @@ export const getCoinbaseRedirect: RequestHandler = async (req, res, next) => {
                 user.token = response.data;
                 user.save().then(() => {
                     return res.redirect(
-                        `http://localhost:8080/coinbase-login-success/${response.data.access_token}`
+                        `http://localhost:8080/binance-login-success/${response.data.access_token}`
                     );
                 });
             },

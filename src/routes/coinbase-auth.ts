@@ -1,10 +1,13 @@
-// import { Router } from "express";
-// import { getCoinbaseLogin, getCoinbaseRedirect } from "../controllers/coinbase-auth-controller";
+import { Router } from "express";
+import {
+    getCoinbaseLogin,
+    getCoinbaseRedirect,
+} from "../controllers/coinbase-auth-controller";
 
-// const router = Router();
+const router = Router();
 
-// router.get('/login', getCoinbaseLogin)
+router.get("/login", getCoinbaseLogin);
 
-// router.get('/redirect', getCoinbaseRedirect)
+router.get("/redirect", getCoinbaseRedirect);
 
-// export default router;
+export default router;
