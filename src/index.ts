@@ -17,6 +17,8 @@ connect(
 
     app.use((_: Request, res: Response, next: NextFunction) => {
       res.setHeader("Access-Control-Allow-Origin", "*");
+      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE'); //allow those clients to access the API using those methods
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization'); //allow those clients to access the API using this headers
       next();
     });
 

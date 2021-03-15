@@ -19,7 +19,6 @@ router.post(
           }
         });
       }),
-
     body("password")
       .trim()
       .isLength({ min: 8 })
