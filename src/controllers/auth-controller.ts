@@ -2,10 +2,15 @@ import { RequestHandler } from 'express';
 import { UserModel } from "../models/user-model";
 import { sign } from "jsonwebtoken";
 import { compareSync, hashSync } from "bcrypt"
+import { validationResult } from 'express-validator';
+import { RequestError } from '../types/RequestError';
 
 export const postRegister: RequestHandler = async (req, res, next) => {
+  if(!validationResult(req).isEmpty()) {
+    return next(new RequestError(422, "Invalid input", validationResult(req).array()))
+  }
   UserModel.create({
-    username: req.body.username,
+    email: req.body.email,
     password: hashSync(req.body.password, 5)
   })
     .then(
@@ -16,7 +21,7 @@ export const postRegister: RequestHandler = async (req, res, next) => {
 
 export const postLogin: RequestHandler = async (req, res, next) => {
   let loadedUser = new UserModel();
-  UserModel.findOne({ username: req.body.username })
+  UserModel.findOne({ email: req.body.email })
     .then((user) => {
       loadedUser = user;
       return compareSync(req.body.password, user.password)
@@ -27,7 +32,7 @@ export const postLogin: RequestHandler = async (req, res, next) => {
           .json({
             jwt: sign({
               userId: loadedUser._id.toString(),
-              username: loadedUser.username
+              email: loadedUser.email
             },
               "UCNcryptoDASHBOARDsuperSECUREstring",
               { expiresIn: 7200 }
