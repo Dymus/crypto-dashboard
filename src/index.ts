@@ -6,6 +6,7 @@ import { json } from "body-parser";
 import authRoutes from "./routes/auth";
 import binanceAuthRoutes from "./routes/binance-auth";
 import coinbaseAuthRoutes from "./routes/coinbase-auth";
+import coinbaseApiRoutes from "./routes/coinbase-api";
 
 connect(
     "mongodb+srv://sa:CryptoDashboard@cryptodashboard.0obwg.mongodb.net/CryptoDashboard",
@@ -23,6 +24,7 @@ connect(
 
         app.use("/binance", binanceAuthRoutes);
         app.use("/coinbase", coinbaseAuthRoutes);
+        app.use("/coinbase-api", coinbaseApiRoutes);
         app.use(authRoutes);
 
         app.listen(3000, () => {
