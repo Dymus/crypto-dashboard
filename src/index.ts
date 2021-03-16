@@ -39,7 +39,7 @@ connect(
             errors: (err as RequestError).errors,
           });
       } else {
-        return res.status(500).json({ message: err.message });
+        return res.status(500).json({ errorMessage: err.message });
       }
     });
 

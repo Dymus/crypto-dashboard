@@ -23,9 +23,6 @@ export class User {
 
   @prop({ required: true })
   public password: string
-
-  @prop()
-  public token?: string
 }
 
 export const UserModel = getModelForClass(User);

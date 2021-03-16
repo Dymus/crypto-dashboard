@@ -48,7 +48,7 @@ export const postLogin: RequestHandler = async (req, res, next) => {
                 email: user.email,
               },
               fs.readFileSync(path.join(__dirname, '..', '..', "keys", "private.pem")),
-              { expiresIn: 7200, algorithm: "RS256" }
+              { expiresIn: req.body.rememberMe? 2592000 : 7200 , algorithm: "RS256" }
             ),
           });
         } else {
