@@ -1,7 +1,8 @@
 import { Router } from "express";
-import { postRegister, postLogin } from "../controllers/auth-controller";
+import { postRegister, postLogin, test } from "../controllers/auth-controller";
 import { body } from "express-validator";
 import { UserModel } from "../models/user-model";
+import { verify } from "jsonwebtoken";
 
 const router = Router();
 
@@ -31,6 +32,25 @@ router.post(
   postRegister
 );
 
-router.post("/login", postLogin);
+router.post(
+  "/login",
+  [
+    body("email")
+      .isEmail()
+      .withMessage("Invalid email")
+      .normalizeEmail()
+      .custom((value) => {
+        return UserModel.findOne({ email: value }).then((user) => {
+          if (!user) {
+            return Promise.reject("This user does not exist");
+          }
+        });
+      }),
+    body("password").trim(),
+  ],
+  postLogin
+);
+
+router.get("/test", test)
 
 export default router;

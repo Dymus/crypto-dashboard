@@ -17,7 +17,7 @@ import { getModelForClass, prop } from "@typegoose/typegoose";
 //   public scope: string
 // }
 
-class User {
+export class User {
   @prop({ required: true, })
   public email: string
 

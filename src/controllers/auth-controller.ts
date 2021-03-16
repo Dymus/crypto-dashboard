@@ -1,46 +1,76 @@
-import { RequestHandler } from 'express';
-import { UserModel } from "../models/user-model";
-import { sign } from "jsonwebtoken";
-import { compareSync, hashSync } from "bcrypt"
-import { validationResult } from 'express-validator';
-import { RequestError } from '../types/RequestError';
+import { RequestHandler } from "express";
+import { sign, verify } from "jsonwebtoken";
+import { compareSync, hashSync } from "bcrypt";
+import { validationResult } from "express-validator";
+import { RequestError } from "../types/RequestError";
+import { createUser, getUser } from "../database/userDB";
+import path from "path";
+import fs from "fs";
 
 export const postRegister: RequestHandler = async (req, res, next) => {
-  if(!validationResult(req).isEmpty()) {
-    return next(new RequestError(422, "Invalid input", validationResult(req).array()))
+  if (!validationResult(req).isEmpty()) {
+    return next(
+      new RequestError(422, "Invalid input", validationResult(req).array())
+    );
   }
-  UserModel.create({
+  createUser({
     email: req.body.email,
-    password: hashSync(req.body.password, 5)
+    password: hashSync(req.body.password, 5),
   })
     .then(
-      (user) => { return user ? res.status(201).send() : res.status(409).send() }
+      () => {
+        return res.status(201).send();
+      },
+      () => {
+        throw new RequestError(409, "User could not be created");
+      }
     )
-    .catch((error) => { return res.status(500).json({ error }) })
-}
+    .catch((internalError) => {
+      return next(internalError);
+    });
+};
 
 export const postLogin: RequestHandler = async (req, res, next) => {
-  let loadedUser = new UserModel();
-  UserModel.findOne({ email: req.body.email })
-    .then((user) => {
-      loadedUser = user;
-      return compareSync(req.body.password, user.password)
-    })
-    .then(
-      () => {
-        return res.status(200)
-          .json({
-            jwt: sign({
-              userId: loadedUser._id.toString(),
-              email: loadedUser.email
-            },
-              "UCNcryptoDASHBOARDsuperSECUREstring",
-              { expiresIn: 7200 }
-            )
-          })
-      },
-      () => { return res.status(401).send() }
-    )
-    .catch((error) => { return res.status(500).json({ error }) })
-}
+  if (!validationResult(req).isEmpty()) {
+    return next(
+      new RequestError(422, "Invalid input", validationResult(req).array())
+    );
+  }
 
+  getUser(req.body.email)
+    .then(
+      (user) => {
+        if (compareSync(req.body.password, user.password)) {
+          return res.status(200).json({
+            jwt: sign(
+              {
+                userId: user._id.toString(),
+                email: user.email,
+              },
+              fs.readFileSync(path.join(__dirname, '..', '..', "keys", "private.pem")),
+              { expiresIn: 7200, algorithm: "RS256" }
+            ),
+          });
+        } else {
+          throw new RequestError(
+            401,
+            "Password does not match with this email"
+          );
+        }
+      },
+      () => {
+        throw new RequestError(404, "User could not be found");
+      }
+    )
+    .catch((internalError) => {
+      return next(internalError);
+    });
+};
+
+export const test = (req, res, next) => {
+  const testVariable = verify(
+    req.get("Authorization").split(" ")[1],
+    fs.readFileSync(path.join(__dirname, '..', '..', "keys", "public.pem"))
+  );
+  return res.json(testVariable);
+};

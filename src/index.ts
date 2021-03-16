@@ -2,12 +2,16 @@ import express from "express";
 import { Request, Response, NextFunction } from "express";
 import { connect } from "mongoose";
 import { json } from "body-parser";
+import {config} from 'dotenv'
 
 import authRoutes from "./routes/auth";
 import { RequestError } from "./types/RequestError";
 
+
+config()
+
 connect(
-  "mongodb+srv://sa:CryptoDashboard@cryptodashboard.0obwg.mongodb.net/CryptoDashboard",
+  process.env.MONGO_URI,
   { useNewUrlParser: true, useUnifiedTopology: true }
 )
   .then(() => {
@@ -17,8 +21,10 @@ connect(
 
     app.use((_: Request, res: Response, next: NextFunction) => {
       res.setHeader("Access-Control-Allow-Origin", "*");
-      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE'); //allow those clients to access the API using those methods
-      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization'); //allow those clients to access the API using this headers
+      res.setHeader('Access-Control-Allow-Methods',
+       'GET, POST, PUT, PATCH, DELETE');
+      res.setHeader('Access-Control-Allow-Headers',
+       'Content-Type, Authorization');
       next();
     });
 
