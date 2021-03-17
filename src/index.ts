@@ -18,6 +18,8 @@ connect(
         app.use(json());
 
         app.use((_: Request, res: Response, next: NextFunction) => {
+            res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE'); //allow those clients to access the API using those methods
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, CoinbaseAccessToken'); //allow those clients to access the API using this headers
             res.setHeader("Access-Control-Allow-Origin", "*");
             next();
         });

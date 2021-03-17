@@ -1,12 +1,13 @@
 import { Router } from "express";
 import {
     getCoinbaseWallet,
-    getCoinbaseTransactionsForCoin,
+    getCoinbaseTransactionsForAccount,
 } from "../controllers/coinbase-api-controller";
 
 const router = Router();
 
-router.get("/coin-transactions", getCoinbaseTransactionsForCoin);
+router.get("/account-transactions/:accountId", getCoinbaseTransactionsForAccount);
+
 router.get("/wallet", getCoinbaseWallet);
 
 export default router;

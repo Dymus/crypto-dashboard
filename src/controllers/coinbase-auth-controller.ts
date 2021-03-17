@@ -1,13 +1,10 @@
 import { RequestHandler } from "express";
 import axios from "axios";
-import { UserModel } from "../models/user-model";
 import { AccessTokenModel } from "../models/access-token";
-import { sign } from "jsonwebtoken";
-import { hashSync } from "bcrypt";
 
 export const getCoinbaseLogin: RequestHandler = async (req, res, next) => {
     res.redirect(
-        `http://www.coinbase.com/oauth/authorize?response_type=code&client_id=80035f23c3addbba5736cdc3a67b74eced44100cf00a8ad9d484958d4e7b0188&redirect_uri=http://localhost:3000/coinbase/redirect&scope=wallet:accounts:read,wallet:sells:read,wallet:buys:read,wallet:deposits:read&account=all`
+        `http://www.coinbase.com/oauth/authorize?response_type=code&client_id=80035f23c3addbba5736cdc3a67b74eced44100cf00a8ad9d484958d4e7b0188&redirect_uri=http://localhost:3000/coinbase/redirect&scope=wallet:accounts:read,wallet:sells:read,wallet:buys:read,wallet:deposits:read,wallet:transactions:read&account=all`
     );
 };
 
@@ -35,18 +32,3 @@ export const getCoinbaseRedirect: RequestHandler = async (req, res, next) => {
             }
         );
 };
-
-export const postRegister: RequestHandler = async (req, res, next) => {
-    UserModel.create({
-        username: req.body.username,
-        password: hashSync(req.body.password, 5),
-    })
-        .then((user) => {
-            return user ? res.status(201).send() : res.status(409).send();
-        })
-        .catch((error) => {
-            return res.status(500).json({ error });
-        });
-};
-
-export const postLogin: RequestHandler = async (req, res, next) => {};
