@@ -7,15 +7,6 @@
         "max-line-length": [true , 90]
     },
     "rules": {
-        "max-line-length": [
-            true,
-            {
-              "limit": 90,
-              "ignore-pattern": "^import |^export {(.*?)}",
-              "check-strings": true,
-              "check-regex": true
-            }
-          ],
         "no-any": [true, {"ignore-rest-args": true}],
         "no-non-null-assertion": true,
         "only-arrow-functions": true,
@@ -33,6 +24,7 @@
         "no-trailing-whitespace": [true, "ignore-comments"],
         "no-console": false,
         "variable-name": false,
-        "max-classes-per-file": false
+        "max-classes-per-file": false,
+        "no-string-literal": false
     }
 }
