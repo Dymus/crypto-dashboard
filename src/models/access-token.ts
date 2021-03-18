@@ -1,6 +1,6 @@
-import { getModelForClass, prop } from "@typegoose/typegoose";
+import { buildSchema, getModelForClass, prop } from "@typegoose/typegoose";
 
-class AccessToken {
+export class AccessToken {
     @prop()
     public access_token: string;
 
@@ -16,5 +16,5 @@ class AccessToken {
     @prop()
     public scope: string;
 }
-
+export const AccessTokenSchema = buildSchema(AccessToken);
 export const AccessTokenModel = getModelForClass(AccessToken);

@@ -1,13 +1,13 @@
-import { Router } from "express";
-import {
-    getBinanceLogin,
-    getBinanceRedirect,
-} from "../controllers/binance-auth-controller";
+// import { Router } from "express";
+// import {
+//     getBinanceLogin,
+//     getBinanceRedirect,
+// } from "../controllers/binance-auth-controller";
 
-const router = Router();
+// const router = Router();
 
-router.get("/login", getBinanceLogin);
+// router.get("/login", getBinanceLogin);
 
-router.get("/redirect", getBinanceRedirect);
+// router.get("/redirect", getBinanceRedirect);
 
-export default router;
+// export default router;
