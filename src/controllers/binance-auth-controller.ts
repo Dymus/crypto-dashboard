@@ -20,7 +20,7 @@ export const getBinanceRedirect: RequestHandler = async (req, res, next) => {
         .then(
             (response) => {
                 const user = new UserModel();
-                user.token = response.data;
+                // user.token = response.data;
                 user.save().then(() => {
                     return res.redirect(
                         `http://localhost:8080/binance-login-success/${response.data.access_token}`
@@ -35,7 +35,7 @@ export const getBinanceRedirect: RequestHandler = async (req, res, next) => {
 
 export const postRegister: RequestHandler = async (req, res, next) => {
     UserModel.create({
-        username: req.body.username,
+        email: req.body.email,
         password: hashSync(req.body.password, 5),
     })
         .then((user) => {
