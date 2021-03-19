@@ -3,13 +3,10 @@ import axios from "axios";
 import { getTrends } from "../database/trendDB";
 import { RequestError } from "../types/RequestError";
 
-// :cryptocurrencyName
-
 export const getTrendsForCryptocurrency: RequestHandler = async (req, res, next) => {
-    getTrends(req.params.cryptocurrencyName)
+    getTrends(req.params.cryptocurrencyName, req.params.scrapedAfter)
     .then(
       (trends) => {
-        console.log(trends)
         return res.status(200).json(trends)
       },
       () => {

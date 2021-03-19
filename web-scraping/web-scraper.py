@@ -37,7 +37,7 @@ while True:
         timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
 
         # Writing to file
-        f = open(f'{cryptocurrency}.txt', 'a')
+        f = open(f'/web-scraping/{cryptocurrency}.txt', 'a')
         f.write(f'Date: {timestamp} \tTrending {count} times.\n\n')
 
         for sub in subreddits:

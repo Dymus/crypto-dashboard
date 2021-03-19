@@ -5,6 +5,6 @@ import {
 
 const router = Router();
 
-router.get("/trends/:cryptocurrencyName", getTrendsForCryptocurrency);
+router.get("/trends/:cryptocurrencyName/:scrapedAfter", getTrendsForCryptocurrency);
 
 export default router;
