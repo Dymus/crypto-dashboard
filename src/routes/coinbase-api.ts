@@ -4,10 +4,16 @@ import {
     getCoinbaseTransactionsForAccount,
 } from "../controllers/coinbase-api-controller";
 
+import { isCoinbaseAuth } from "../controllers/coinbase-auth-controller";
+
 const router = Router();
 
-router.get("/account-transactions/:accountId", getCoinbaseTransactionsForAccount);
+router.get(
+    "/account-transactions/:accountId",
+    isCoinbaseAuth,
+    getCoinbaseTransactionsForAccount
+);
 
-router.get("/wallet", getCoinbaseWallet);
+router.get("/wallet", isCoinbaseAuth, getCoinbaseWallet);
 
 export default router;
