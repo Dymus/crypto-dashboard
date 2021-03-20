@@ -16,7 +16,7 @@ export class User {
     public password: string;
 
     @prop({ _id: false, default: null })
-    coinbaseAccessToken: CoinbaseAccessToken;
+    coinbaseTokens?: CoinbaseAccessToken;
 }
 
 export const UserModel = getModelForClass(User);

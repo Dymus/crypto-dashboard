@@ -1,8 +1,7 @@
 import { Router } from "express";
-import { postRegister, postLogin, test } from "../controllers/auth-controller";
+import { postRegister, postLogin } from "../controllers/auth-controller";
 import { body } from "express-validator";
 import { UserModel } from "../models/user-model";
-import { verify } from "jsonwebtoken";
 
 const router = Router();
 
@@ -50,7 +49,5 @@ router.post(
   ],
   postLogin
 );
-
-router.get("/test", test)
 
 export default router;

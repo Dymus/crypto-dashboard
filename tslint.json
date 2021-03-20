@@ -7,7 +7,6 @@
         "max-line-length": [true , 90]
     },
     "rules": {
-        "no-any": [true, {"ignore-rest-args": true}],
         "no-non-null-assertion": true,
         "only-arrow-functions": true,
         "await-promise": true,
@@ -16,7 +15,6 @@
         "no-duplicate-variable": true,
         "no-switch-case-fall-through": true,
         "no-unused-variable": true,
-        "no-use-before-declare": true,
         "no-require-imports": true,
         "class-name": true,
         "arrow-parens": true,

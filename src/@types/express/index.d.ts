@@ -1,16 +1,9 @@
-import { UserModel } from "../../models/user-model";
-
-export {};
+export { };
 
 declare global {
-    namespace Express {
-        interface Request {
-            user: UserModel;
-            userId?: string;
-            email?: string;
-            isCoinbaseApproved?: boolean;
-            coinbaseAccessToken: string;
-            coinbaseRefreshToken: string;
-        }
+  namespace Express {
+    interface Request {
+      user: any
     }
+  }
 }

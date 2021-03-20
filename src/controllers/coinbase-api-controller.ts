@@ -1,20 +1,21 @@
-import { RequestHandler } from "express";
-import axios from "axios";
-import { RequestError } from "../types/RequestError";
+import { RequestHandler } from 'express';
+import axios from 'axios';
+import { RequestError } from '../types/RequestError';
+import { CoinbaseAccount } from '../types/CoinbaseAccount';
+import { coinbaseGet } from '../coinbase-api-helper/coinbase-request-helper';
+import { validationResult } from "express-validator";
 
 export const getCoinbaseWallet: RequestHandler = async (req, res, next) => {
     let coinbaseAccounts: any[];
     let mappedCoinbaseAccounts: CoinbaseAccount[];
-    return axios
-        .get(`https://api.coinbase.com/v2/accounts?limit=99`, {
-            headers: {
-                Authorization: `Bearer ${req.headers["coinbaseaccesstoken"]}`,
-            },
-        })
+    coinbaseGet(
+        'https://api.coinbase.com/v2/accounts?limit=99',
+        req.user.coinbaseTokens,
+        req.user._id
+    )
         .then(
             (response) => {
                 coinbaseAccounts = response.data.data;
-
                 const requiredForFiat = (response.data.data as any[])
                     .map((account) => {
                         if (+account.balance.amount !== 0) {
@@ -23,14 +24,16 @@ export const getCoinbaseWallet: RequestHandler = async (req, res, next) => {
                         return null;
                     })
                     .filter(Boolean)
-                    .join(",");
+                    .join(',');
 
                 return axios.get(
                     `https://api.coingecko.com/api/v3/simple/price?ids=${requiredForFiat}&vs_currencies=eur`
                 );
             },
-            (error) => {
-                throw new RequestError(500, "Server Error");
+            () => {
+                throw next(
+                    new RequestError(404, 'Could not find your Coinbase wallet')
+                );
             }
         )
         .then(
@@ -47,7 +50,7 @@ export const getCoinbaseWallet: RequestHandler = async (req, res, next) => {
                         balance: +account.balance.amount,
                         fiatBalance: response.data[account.currency.slug]
                             ? +account.balance.amount *
-                              response.data[account.currency.slug].eur
+                            response.data[account.currency.slug].eur
                             : 0,
                         allocation: 0,
                         slug: account.currency.slug,
@@ -71,45 +74,40 @@ export const getCoinbaseWallet: RequestHandler = async (req, res, next) => {
                     accounts: mappedCoinbaseAccounts,
                 });
             },
-            (error) => {
-                console.log("error");
+            () => {
+                throw next(
+                    new RequestError(404, 'Could not get current info from Coingecko')
+                );
             }
-        );
+        ).catch((internalError) => {
+            throw next(internalError);
+        })
 };
-
-interface CoinbaseAccount {
-    accountId: string;
-    code: string;
-    name: string;
-    color: string;
-    assetId: string;
-    balance: number;
-    fiatBalance: number;
-    slug: string;
-    allocation: number;
-}
 
 export const getCoinbaseTransactionsForAccount: RequestHandler = async (
     req,
     res,
     next
 ) => {
-    return axios
-        .get(
-            `https://api.coinbase.com/v2/accounts/${req.params.accountId}/buys`,
-            {
-                headers: {
-                    Authorization: `Bearer ${req.headers["coinbaseaccesstoken"]}`,
-                },
-            }
-        )
-        .then(
-            (response) => {
-                console.log(response.data);
-                return res.status(200).json(response.data.data);
-            },
-            (error) => {
-                return res.status(error.response.status).send();
-            }
+    if (!validationResult(req).isEmpty()) {
+        throw next(
+            new RequestError(
+                422,
+                "Invalid input",
+                validationResult(req).array()
+            )
         );
+    }
+    coinbaseGet(
+        `https://api.coinbase.com/v2/accounts/${req.params.accountId}/buys`,
+        req.user.coinbaseTokens,
+        req.user._id
+    ).then(
+        (response) => {
+            return res.status(200).json(response.data.data);
+        },
+        () => {
+            throw next(new RequestError(404, 'Could not find your transactions'));
+        }
+    );
 };
