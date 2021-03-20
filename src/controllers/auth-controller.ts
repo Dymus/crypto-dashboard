@@ -3,11 +3,51 @@ import { sign, verify } from 'jsonwebtoken';
 import { compareSync, hashSync } from 'bcrypt';
 import { validationResult } from 'express-validator';
 import { RequestError } from '../types/RequestError';
-import { createUser, getUser } from '../database/userDB';
+import { createUser, getUser, getUserById } from '../database/userDB';
 import path from 'path';
 import fs from 'fs';
 import { TokenPayload } from '../types/TokenPayload';
 import { UserModel } from '../models/user-model';
+
+export const refreshToken: RequestHandler = async (req, res, next) => {
+  try {
+    console.log(req);
+    verify(
+      req.cookies.refreshToken,
+      fs.readFileSync(path.join(__dirname, '..', '..', 'keys', 'public.pem')),
+      async (error, decodedToken: TokenPayload) => {
+        if (!error) {
+          const user = await getUserById(decodedToken.userId);
+          const newToken = sign(
+            {
+              userId: user._id.toString(),
+              email: user.email,
+              isCoinbaseApproved: user.coinbaseTokens ? true : false,
+            },
+            fs.readFileSync(
+              path.join(__dirname, '..', '..', 'keys', 'private.pem')
+            ),
+            {
+              expiresIn: 7200,
+              algorithm: 'RS256',
+            }
+          );
+          console.log(user);
+          console.log(newToken);
+          return res.status(201).json({ jwt: newToken });
+        } else {
+          next(
+            new RequestError(401, 'Unauthorized Access', [
+              'ExpiredRefreshError',
+            ])
+          );
+        }
+      }
+    );
+  } catch (internalError) {
+    return next(internalError);
+  }
+};
 
 export const isAuth: RequestHandler = async (req, _, next) => {
   try {
@@ -21,9 +61,13 @@ export const isAuth: RequestHandler = async (req, _, next) => {
       async (error, decodedToken: TokenPayload) => {
         if (!error) {
           req.user = await UserModel.findById(decodedToken.userId).exec();
-          return next();
+          next();
+        } else if (error.name === 'TokenExpiredError') {
+          next(
+            new RequestError(401, 'Unauthorized Access', ['TokenExpiredError'])
+          );
         } else {
-          return next(new RequestError(401, 'Unauthorized Access'));
+          next(new RequestError(401, 'Unauthorized Access'));
         }
       }
     );
@@ -66,35 +110,76 @@ export const postLogin: RequestHandler = async (req, res, next) => {
     .then(
       (user) => {
         if (compareSync(req.body.password, user.password)) {
-          return res.status(200).cookie("refreshToken", sign(
-            {
-              refreshToken: true
-            },
-            fs.readFileSync(
-              path.join(__dirname, '..', '..', 'keys', 'private.pem')
-            ),
-            {
-              expiresIn: 31536000000,
-              algorithm: 'RS256',
-            }
-          ), { httpOnly: true }).json({
-            jwt: sign(
-              {
-                refreshToken: false,
-                userId: user._id.toString(),
-                email: user.email,
-                // TODO find out if needed at all
-                isCoinbaseApproved: user.coinbaseTokens ? true : false,
-              },
-              fs.readFileSync(
-                path.join(__dirname, '..', '..', 'keys', 'private.pem')
-              ),
-              {
-                expiresIn: req.body.rememberMe ? 2592000 : 7200,
-                algorithm: 'RS256',
-              }
-            )
-          });
+          if (req.body.rememberMe) {
+            return res
+              .status(200)
+              .cookie(
+                'refreshToken',
+                sign(
+                  {
+                    userId: user._id.toString(),
+                  },
+                  fs.readFileSync(
+                    path.join(__dirname, '..', '..', 'keys', 'private.pem')
+                  ),
+                  {
+                    expiresIn: 2678400,
+                    algorithm: 'RS256',
+                  }
+                ),
+                { httpOnly: true, maxAge: 2678400 }
+              )
+              .json({
+                jwt: sign(
+                  {
+                    userId: user._id.toString(),
+                    email: user.email,
+                    isCoinbaseApproved: user.coinbaseTokens ? true : false,
+                  },
+                  fs.readFileSync(
+                    path.join(__dirname, '..', '..', 'keys', 'private.pem')
+                  ),
+                  {
+                    expiresIn: 10,
+                    algorithm: 'RS256',
+                  }
+                ),
+              });
+          } else {
+            return res
+              .cookie(
+                'refreshToken',
+                sign(
+                  {
+                    userId: user._id.toString(),
+                  },
+                  fs.readFileSync(
+                    path.join(__dirname, '..', '..', 'keys', 'private.pem')
+                  ),
+                  {
+                    expiresIn: 86400,
+                    algorithm: 'RS256',
+                  }
+                ),
+                { httpOnly: true }
+              )
+              .json({
+                jwt: sign(
+                  {
+                    userId: user._id.toString(),
+                    email: user.email,
+                    isCoinbaseApproved: user.coinbaseTokens ? true : false,
+                  },
+                  fs.readFileSync(
+                    path.join(__dirname, '..', '..', 'keys', 'private.pem')
+                  ),
+                  {
+                    expiresIn: 10,
+                    algorithm: 'RS256',
+                  }
+                ),
+              });
+          }
         } else {
           throw new RequestError(
             401,

@@ -1,5 +1,5 @@
-import cryptoJs from "crypto-js";
-import { CoinbaseAccessToken, User, UserModel } from "../models/user-model";
+import cryptoJs from 'crypto-js';
+import { CoinbaseAccessToken, User, UserModel } from '../models/user-model';
 
 export const createUser = async (user: User) => {
   return UserModel.create(user).then((createdUser) =>
@@ -13,17 +13,24 @@ export const getUser = async (email: string) => {
   );
 };
 
-export const saveCoinbaseTokens = async (userId: string, newCoinbaseTokens: CoinbaseAccessToken) => {
-  return UserModel.findById(userId)
-    .then(
-      (user) => {
-        user.coinbaseTokens = {
-          access_token: newCoinbaseTokens.access_token,
-          refresh_token: cryptoJs.AES.encrypt(
-            newCoinbaseTokens.refresh_token,
-            user.password
-          ).toString(),
-        };
-        return user.save();
-      })
-}
+export const getUserById = async (userId: string) => {
+  return UserModel.findById(userId).then((user) =>
+    user ? Promise.resolve(user) : Promise.reject()
+  );
+};
+
+export const saveCoinbaseTokens = async (
+  userId: string,
+  newCoinbaseTokens: CoinbaseAccessToken
+) => {
+  return UserModel.findById(userId).then((user) => {
+    user.coinbaseTokens = {
+      access_token: newCoinbaseTokens.access_token,
+      refresh_token: cryptoJs.AES.encrypt(
+        newCoinbaseTokens.refresh_token,
+        user.password
+      ).toString(),
+    };
+    return user.save();
+  });
+};
