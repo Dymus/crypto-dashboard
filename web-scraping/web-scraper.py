@@ -17,7 +17,7 @@ collection = our_database['trends']
 subreddits = ['CryptoCurrency', 'CryptoCurrencies', 'CryptoCurrencyTrading']  # make a list of subreddits you want to scrape the data from
 
 # Keywords to look for trends
-cryptocurrencies = ['Bitcoin', 'Ethereum', 'Cardano']
+cryptocurrencies = ['Bitcoin', 'Ethereum', 'Cardano', 'Litecoin', 'Binance coin', 'Basic Attention Token', 'Monero', 'Neo', 'Beam', 'Nexo', 'Enjin', 'Doge']
 
 while True:
     urls = {}
@@ -37,7 +37,7 @@ while True:
         timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
 
         # Writing to file
-        f = open(f'/web-scraping/{cryptocurrency}.txt', 'a')
+        f = open(f'web-scraping/{cryptocurrency}.txt', 'a')
         f.write(f'Date: {timestamp} \tTrending {count} times.\n\n')
 
         for sub in subreddits:
