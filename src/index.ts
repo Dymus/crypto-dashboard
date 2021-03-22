@@ -1,3 +1,5 @@
+import path from 'path'
+import {spawn} from 'child_process'
 import express from "express";
 import { Request, Response, NextFunction } from "express";
 import { connect } from "mongoose";
@@ -8,12 +10,18 @@ import dotenvExpand from "dotenv-expand"
 // import binanceAuthRoutes from "./routes/binance-auth";
 import coinbaseAuthRoutes from "./routes/coinbase-auth";
 import coinbaseApiRoutes from "./routes/coinbase-api";
-import authRoutes from "./routes/auth";
+import redditApiRoutes from "./routes/reddit-api";
 import { RequestError } from "./types/RequestError";
 import cookieParser from "cookie-parser"
 
 const myEnv = config()
 dotenvExpand(myEnv)
+
+const runScript = () => {
+  return spawn('python', [
+    path.join(__dirname, '../web-scraping/web-scraper.py'),
+  ]);
+}
 
 connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
@@ -37,6 +45,7 @@ connect(process.env.MONGO_URI, {
         // app.use("/binance", binanceAuthRoutes);
         app.use("/coinbase", coinbaseAuthRoutes);
         app.use("/coinbase-api", coinbaseApiRoutes);
+        app.use("/reddit-api", redditApiRoutes)
 
         app.use((err: Error, _: Request, res: Response, _2: NextFunction) => {
             if (err instanceof RequestError) {
@@ -51,6 +60,7 @@ connect(process.env.MONGO_URI, {
 
         app.listen(3000, () => {
             console.log("listening on port 3000");
+            runScript()
         });
     })
     .catch((error) => {
