@@ -23,7 +23,7 @@ export const postSaveCoinbaseToken: RequestHandler = async (req, res, next) => {
     );
   }
   saveCoinbaseTokens(req.user._id, req.body.coinbaseTokens).then(
-    () => res.status(201).json({ message: 'User successfully created' }),
+    () => res.status(201).json({ message: 'Coinbase tokens saved successfully' }),
     () =>
       res.status(500).json({ errorMessage: 'Could not save token to the DB' })
   );

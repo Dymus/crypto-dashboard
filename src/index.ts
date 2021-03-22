@@ -10,6 +10,7 @@ import coinbaseAuthRoutes from "./routes/coinbase-auth";
 import coinbaseApiRoutes from "./routes/coinbase-api";
 import authRoutes from "./routes/auth";
 import { RequestError } from "./types/RequestError";
+import cookieParser from "cookie-parser"
 
 const myEnv = config()
 dotenvExpand(myEnv)
@@ -22,17 +23,19 @@ connect(process.env.MONGO_URI, {
         const app = express();
 
         app.use(json());
+        app.use(cookieParser());
 
         app.use((_: Request, res: Response, next: NextFunction) => {
             res.setHeader(
                 "Access-Control-Allow-Headers",
                 "Content-Type, Authorization"
             );
-            res.setHeader("Access-Control-Allow-Origin", "*");
+            res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
             res.setHeader(
                 "Access-Control-Allow-Methods",
                 "POST, PUT, GET, DELETE"
             );
+            res.setHeader("Access-Control-Allow-Credentials", "true")
             next();
         });
 

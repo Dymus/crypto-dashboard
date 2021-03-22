@@ -18,6 +18,7 @@
   "homepage": "https://github.com/Dymus/crypto-dashboard#readme",
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
+    "@types/cookie-parser": "^1.4.2",
     "@types/crypto-js": "^4.0.1",
     "@types/express": "^4.17.11",
     "@types/express-validator": "^3.0.0",
@@ -33,6 +34,7 @@
     "@typegoose/typegoose": "^7.6.0",
     "axios": "^0.21.1",
     "bcrypt": "^5.0.1",
+    "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",
     "dotenv-expand": "^5.1.0",
     "express": "^4.17.1",

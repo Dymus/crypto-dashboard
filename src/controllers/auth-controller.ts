@@ -9,9 +9,8 @@ import fs from 'fs';
 import { TokenPayload } from '../types/TokenPayload';
 import { UserModel } from '../models/user-model';
 
-export const refreshToken: RequestHandler = async (req, res, next) => {
+export const refreshToken: RequestHandler = (req, res, next) => {
   try {
-    console.log(req);
     verify(
       req.cookies.refreshToken,
       fs.readFileSync(path.join(__dirname, '..', '..', 'keys', 'public.pem')),
@@ -32,8 +31,6 @@ export const refreshToken: RequestHandler = async (req, res, next) => {
               algorithm: 'RS256',
             }
           );
-          console.log(user);
-          console.log(newToken);
           return res.status(201).json({ jwt: newToken });
         } else {
           next(
@@ -49,7 +46,7 @@ export const refreshToken: RequestHandler = async (req, res, next) => {
   }
 };
 
-export const isAuth: RequestHandler = async (req, _, next) => {
+export const isAuth: RequestHandler = (req, _, next) => {
   try {
     if (!req.get('Authorization')) {
       throw new RequestError(401, 'Unauthorized Access');
@@ -63,9 +60,7 @@ export const isAuth: RequestHandler = async (req, _, next) => {
           req.user = await UserModel.findById(decodedToken.userId).exec();
           next();
         } else if (error.name === 'TokenExpiredError') {
-          next(
-            new RequestError(401, 'Unauthorized Access', ['TokenExpiredError'])
-          );
+          next(new RequestError(401, 'Unauthorized Access', ['TokenExpiredError']));
         } else {
           next(new RequestError(401, 'Unauthorized Access'));
         }
@@ -127,7 +122,7 @@ export const postLogin: RequestHandler = async (req, res, next) => {
                     algorithm: 'RS256',
                   }
                 ),
-                { httpOnly: true, maxAge: 2678400 }
+                { httpOnly: true, maxAge: 2678400, }
               )
               .json({
                 jwt: sign(
