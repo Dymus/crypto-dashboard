@@ -8,42 +8,22 @@ import path from 'path';
 import fs from 'fs';
 import { TokenPayload } from '../types/TokenPayload';
 import { UserModel } from '../models/user-model';
+import { refreshJWT } from '../jwt-helpers/refresh-jwt-helper';
 
 export const refreshToken: RequestHandler = (req, res, next) => {
-  try {
-    verify(
-      req.cookies.refreshToken,
-      fs.readFileSync(path.join(__dirname, '..', '..', 'keys', 'public.pem')),
-      async (error, decodedToken: TokenPayload) => {
-        if (!error) {
-          const user = await getUserById(decodedToken.userId);
-          const newToken = sign(
-            {
-              userId: user._id.toString(),
-              email: user.email,
-              isCoinbaseApproved: user.coinbaseTokens ? true : false,
-            },
-            fs.readFileSync(
-              path.join(__dirname, '..', '..', 'keys', 'private.pem')
-            ),
-            {
-              expiresIn: 7200,
-              algorithm: 'RS256',
-            }
-          );
-          return res.status(201).json({ jwt: newToken });
-        } else {
-          next(
-            new RequestError(401, 'Unauthorized Access', [
-              'ExpiredRefreshError',
-            ])
-          );
-        }
+  refreshJWT(req.cookies.refreshToken)
+    .then(
+      (newJWTToken) => { return res.status(201).json({ jwt: newJWTToken }) },
+      () => {
+        return next(
+          new RequestError(401, 'Unauthorized Access', [
+            'ExpiredRefreshError',
+          ])
+        );
       }
-    );
-  } catch (internalError) {
-    return next(internalError);
-  }
+  ).catch((internalError) => {
+      return next(internalError);
+  })
 };
 
 export const isAuth: RequestHandler = (req, _, next) => {
@@ -127,7 +107,7 @@ export const postLogin: RequestHandler = async (req, res, next) => {
               .json({
                 jwt: sign(
                   {
-                    userId: user._id.toString(),
+                    userId: user._id,
                     email: user.email,
                     isCoinbaseApproved: user.coinbaseTokens ? true : false,
                   },
@@ -135,7 +115,7 @@ export const postLogin: RequestHandler = async (req, res, next) => {
                     path.join(__dirname, '..', '..', 'keys', 'private.pem')
                   ),
                   {
-                    expiresIn: 10,
+                    expiresIn: 7200,
                     algorithm: 'RS256',
                   }
                 ),
@@ -161,7 +141,7 @@ export const postLogin: RequestHandler = async (req, res, next) => {
               .json({
                 jwt: sign(
                   {
-                    userId: user._id.toString(),
+                    userId: user._id,
                     email: user.email,
                     isCoinbaseApproved: user.coinbaseTokens ? true : false,
                   },
@@ -169,7 +149,7 @@ export const postLogin: RequestHandler = async (req, res, next) => {
                     path.join(__dirname, '..', '..', 'keys', 'private.pem')
                   ),
                   {
-                    expiresIn: 10,
+                    expiresIn: 7200,
                     algorithm: 'RS256',
                   }
                 ),
