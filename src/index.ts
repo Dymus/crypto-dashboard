@@ -8,6 +8,7 @@ import { config } from "dotenv";
 import dotenvExpand from "dotenv-expand"
 
 // import binanceAuthRoutes from "./routes/binance-auth";
+import authRoutes from "./routes/auth";
 import coinbaseAuthRoutes from "./routes/coinbase-auth";
 import coinbaseApiRoutes from "./routes/coinbase-api";
 import redditApiRoutes from "./routes/reddit-api";

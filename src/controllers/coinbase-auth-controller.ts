@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import { RequestError } from '../types/RequestError';
 import { saveCoinbaseTokens } from '../database/userDB';
 import { validationResult } from 'express-validator';
+import { refreshJWT } from '../jwt-helpers/refresh-jwt-helper';
 
 export const isCoinbaseAuth: RequestHandler = async (req, _, next) => {
   if (req.user.coinbaseTokens) {
@@ -23,8 +24,11 @@ export const postSaveCoinbaseToken: RequestHandler = async (req, res, next) => {
     );
   }
   saveCoinbaseTokens(req.user._id, req.body.coinbaseTokens).then(
-    () => res.status(201).json({ message: 'Coinbase tokens saved successfully' }),
+    () => refreshJWT(req.cookies.refreshToken),
+    () => res.status(500).json({ errorMessage: 'Could not save token to the DB' })
+  ).then(
+    (newJWTToken) => res.status(201).json({ message: 'Coinbase tokens saved successfully', jwt: newJWTToken }),
     () =>
-      res.status(500).json({ errorMessage: 'Could not save token to the DB' })
+      res.status(401).json({ errorMessage: 'Could not reauthenticate user' })
   );
 };
