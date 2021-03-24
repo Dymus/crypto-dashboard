@@ -115,7 +115,7 @@ export const postLogin: RequestHandler = async (req, res, next) => {
                     path.join(__dirname, '..', '..', 'keys', 'private.pem')
                   ),
                   {
-                    expiresIn: 7200,
+                    expiresIn: 20,
                     algorithm: 'RS256',
                   }
                 ),
@@ -149,7 +149,7 @@ export const postLogin: RequestHandler = async (req, res, next) => {
                     path.join(__dirname, '..', '..', 'keys', 'private.pem')
                   ),
                   {
-                    expiresIn: 7200,
+                    expiresIn: 20,
                     algorithm: 'RS256',
                   }
                 ),

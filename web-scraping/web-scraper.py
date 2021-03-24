@@ -2,6 +2,8 @@ from pymongo import MongoClient
 import praw
 import datetime, time
 
+print("Started running the script")
+
 # Acessing the Reddit API
 reddit = praw.Reddit(client_id="fEa4it1xgroveg",#my client id
                      client_secret="UMVpzgGog9y7MnbE7CRHmKjAbbHDzA",  #your client secret

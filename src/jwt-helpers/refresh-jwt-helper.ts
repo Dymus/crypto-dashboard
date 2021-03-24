@@ -19,7 +19,7 @@ export const refreshJWT = async (JWTrefreshToken: string) => {
           path.join(__dirname, '..', '..', 'keys', 'private.pem')
         ),
         {
-          expiresIn: 7200,
+          expiresIn: 10,
           algorithm: 'RS256',
         }
       );
