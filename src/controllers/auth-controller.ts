@@ -3,14 +3,15 @@ import { sign, verify } from 'jsonwebtoken';
 import { compareSync, hashSync } from 'bcrypt';
 import { validationResult } from 'express-validator';
 import { RequestError } from '../types/RequestError';
-import { createUser, getUser, getUserById } from '../database/userDB';
+import { createUser, getUser } from '../database/userDB';
 import path from 'path';
 import fs from 'fs';
-import { TokenPayload } from '../types/TokenPayload';
-import { UserModel } from '../models/user-model';
+import { JWTTokenPayload } from '../types/JWTTokenPayload';
+import { User, UserModel } from '../models/user-model';
 import { refreshJWT } from '../jwt-helpers/refresh-jwt-helper';
+import { DocumentType } from '@typegoose/typegoose';
 
-export const refreshToken: RequestHandler = (req, res, next) => {
+export const refreshJWTToken: RequestHandler = (req, res, next) => {
   refreshJWT(req.cookies.refreshToken)
     .then(
       (newJWTToken) => { return res.status(201).json({ jwt: newJWTToken }) },
@@ -21,9 +22,9 @@ export const refreshToken: RequestHandler = (req, res, next) => {
           ])
         );
       }
-  ).catch((internalError) => {
+    ).catch((internalError) => {
       return next(internalError);
-  })
+    })
 };
 
 export const isAuth: RequestHandler = (req, _, next) => {
@@ -35,10 +36,15 @@ export const isAuth: RequestHandler = (req, _, next) => {
     verify(
       req.get('Authorization').split(' ')[1],
       fs.readFileSync(path.join(__dirname, '..', '..', 'keys', 'public.pem')),
-      async (error, decodedToken: TokenPayload) => {
+      async (error, decodedJWTToken: JWTTokenPayload) => {
         if (!error) {
-          req.user = await UserModel.findById(decodedToken.userId).exec();
-          next();
+          const loadedUser = await UserModel.findById(decodedJWTToken.userId).exec();
+          if (userInfoUpToDate(loadedUser, decodedJWTToken)) {
+            req.user = loadedUser;
+            next();
+          } else {
+            next(new RequestError(401, 'Unauthorized Access', ['TokenExpiredError']));
+          }
         } else if (error.name === 'TokenExpiredError') {
           next(new RequestError(401, 'Unauthorized Access', ['TokenExpiredError']));
         } else {
@@ -102,7 +108,7 @@ export const postLogin: RequestHandler = async (req, res, next) => {
                     algorithm: 'RS256',
                   }
                 ),
-                { httpOnly: true, maxAge: 2678400, }
+                { httpOnly: true, maxAge: 2678400000, }
               )
               .json({
                 jwt: sign(
@@ -115,29 +121,13 @@ export const postLogin: RequestHandler = async (req, res, next) => {
                     path.join(__dirname, '..', '..', 'keys', 'private.pem')
                   ),
                   {
-                    expiresIn: 20,
+                    expiresIn: 80,
                     algorithm: 'RS256',
                   }
                 ),
               });
           } else {
             return res
-              .cookie(
-                'refreshToken',
-                sign(
-                  {
-                    userId: user._id.toString(),
-                  },
-                  fs.readFileSync(
-                    path.join(__dirname, '..', '..', 'keys', 'private.pem')
-                  ),
-                  {
-                    expiresIn: 86400,
-                    algorithm: 'RS256',
-                  }
-                ),
-                { httpOnly: true }
-              )
               .json({
                 jwt: sign(
                   {
@@ -149,7 +139,7 @@ export const postLogin: RequestHandler = async (req, res, next) => {
                     path.join(__dirname, '..', '..', 'keys', 'private.pem')
                   ),
                   {
-                    expiresIn: 20,
+                    expiresIn: 80,
                     algorithm: 'RS256',
                   }
                 ),
@@ -170,3 +160,12 @@ export const postLogin: RequestHandler = async (req, res, next) => {
       return next(internalError);
     });
 };
+
+const userInfoUpToDate = (user: DocumentType<User>, decodedJWTToken: JWTTokenPayload) => {
+  // TODO add more things that could often change in the JWT
+  if (decodedJWTToken.isCoinbaseApproved) {
+    return user.coinbaseTokens !== null
+  } else {
+    return user.coinbaseTokens === null
+  }
+}

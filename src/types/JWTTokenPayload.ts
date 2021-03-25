@@ -1,4 +1,4 @@
-export type TokenPayload = {
+export type JWTTokenPayload = {
     userId: string;
     email: string;
     isCoinbaseApproved: boolean;

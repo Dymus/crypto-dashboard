@@ -25,7 +25,7 @@ export const postSaveCoinbaseToken: RequestHandler = async (req, res, next) => {
   }
   saveCoinbaseTokens(req.user._id, req.body.coinbaseTokens).then(
     () => refreshJWT(req.cookies.refreshToken),
-    () => res.status(500).json({ errorMessage: 'Could not save token to the DB' })
+    () => res.status(500).json({ errorMessage: 'Could not save Coinbase tokens to the DB' })
   ).then(
     (newJWTToken) => res.status(201).json({ message: 'Coinbase tokens saved successfully', jwt: newJWTToken }),
     () =>

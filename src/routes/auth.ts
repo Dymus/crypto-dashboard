@@ -2,14 +2,14 @@ import { Router } from 'express';
 import {
   postRegister,
   postLogin,
-  refreshToken,
+  refreshJWTToken,
 } from '../controllers/auth-controller';
 import { body } from 'express-validator';
 import { UserModel } from '../models/user-model';
 
 const router = Router();
 
-router.get('/refresh-token', refreshToken);
+router.get('/refresh-token', refreshJWTToken);
 
 router.post(
   '/register',
