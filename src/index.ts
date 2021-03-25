@@ -44,8 +44,8 @@ connect(process.env.MONGO_URI, {
             next();
         });
 
-        app.use(userRoutes);
         app.use(authRoutes);
+        app.use("/user", userRoutes);
         // app.use("/binance", binanceAuthRoutes);
         app.use("/coinbase", coinbaseAuthRoutes);
         app.use("/coinbase-api", coinbaseApiRoutes);
