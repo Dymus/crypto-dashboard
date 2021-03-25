@@ -9,6 +9,7 @@ import dotenvExpand from "dotenv-expand"
 import { createServer } from "http";
 
 // import binanceAuthRoutes from "./routes/binance-auth";
+import userRoutes from "./routes/user";
 import authRoutes from "./routes/auth";
 import coinbaseAuthRoutes from "./routes/coinbase-auth";
 import coinbaseApiRoutes from "./routes/coinbase-api";
@@ -43,6 +44,7 @@ connect(process.env.MONGO_URI, {
             next();
         });
 
+        app.use(userRoutes);
         app.use(authRoutes);
         // app.use("/binance", binanceAuthRoutes);
         app.use("/coinbase", coinbaseAuthRoutes);

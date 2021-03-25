@@ -121,13 +121,29 @@ export const postLogin: RequestHandler = async (req, res, next) => {
                     path.join(__dirname, '..', '..', 'keys', 'private.pem')
                   ),
                   {
-                    expiresIn: 80,
+                    expiresIn: 7200,
                     algorithm: 'RS256',
                   }
                 ),
               });
           } else {
             return res
+              .cookie(
+                'refreshToken',
+                sign(
+                  {
+                    userId: user._id.toString(),
+                  },
+                  fs.readFileSync(
+                    path.join(__dirname, '..', '..', 'keys', 'private.pem')
+                  ),
+                  {
+                    expiresIn: 7200,
+                    algorithm: 'RS256',
+                  }
+                ),
+                { httpOnly: true, maxAge: 7200000, }
+              )
               .json({
                 jwt: sign(
                   {
@@ -139,7 +155,7 @@ export const postLogin: RequestHandler = async (req, res, next) => {
                     path.join(__dirname, '..', '..', 'keys', 'private.pem')
                   ),
                   {
-                    expiresIn: 80,
+                    expiresIn: 7200,
                     algorithm: 'RS256',
                   }
                 ),
