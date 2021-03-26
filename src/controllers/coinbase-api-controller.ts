@@ -14,6 +14,7 @@ export const getCoinbaseWallet: RequestHandler = async (req, res, next) => {
                     accounts: response.data.data.map((account) => {
                         return {
                             accountId: account.id,
+                            type: account.type,
                             code: account.currency.code,
                             name: account.currency.name,
                             color: account.currency.color,
