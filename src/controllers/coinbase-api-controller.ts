@@ -10,19 +10,21 @@ export const getCoinbaseWallet: RequestHandler = async (req, res, next) => {
     )
         .then(
             (response) => {
+                const walletAccounts = response.data.data.map((account) => {
+                    return {
+                        accountId: account.id,
+                        type: account.type,
+                        code: account.currency.code,
+                        name: account.currency.name,
+                        color: account.currency.color,
+                        assetId: account.currency.asset_id,
+                        balance: +account.balance.amount,
+                        slug: account.currency.slug,
+                    }
+                })
+                const euroWallet = walletAccounts.splice(walletAccounts.findIndex((account) => account.type === "fiat"), 1)[0]
                 res.status(200).json({
-                    accounts: response.data.data.map((account) => {
-                        return {
-                            accountId: account.id,
-                            type: account.type,
-                            code: account.currency.code,
-                            name: account.currency.name,
-                            color: account.currency.color,
-                            assetId: account.currency.asset_id,
-                            balance: +account.balance.amount,
-                            slug: account.currency.slug,
-                        }
-                    })
+                    walletAccounts, euroWallet
                 })
             },
             (error) => {
@@ -48,11 +50,24 @@ export const getCoinbaseTransactionsForAccount: RequestHandler = async (
         );
     }
     coinbaseGet(
-        `https://api.coinbase.com/v2/accounts/${req.params.accountId}/buys`,
+        `https://api.coinbase.com/v2/accounts/${req.params.accountId}/transactions`,
         req.user
     ).then(
         (response) => {
-            return res.status(200).json(response.data.data);
+            const mappedTransactions = response.data.data.map((transaction) => {
+                return {
+                    transactionId: transaction.id,
+                    transactionDate: transaction.created_at,
+                    transactionType: transaction.type,
+                    transactionStatus: transaction.status,
+                    transactionAmount: transaction.amount.amount,
+                    transactionCurrency: transaction.amount.currency,
+                    transactionFiatAmount: transaction.native_amount.amount,
+                    transactionFiatCurrency: transaction.native_amount.currency,
+                    transactionTitle: transaction.details.title
+                }
+            });
+            return res.status(200).json({transactions : mappedTransactions});
         },
         () => {
             throw next(new RequestError(404, 'Could not find your transactions'));
