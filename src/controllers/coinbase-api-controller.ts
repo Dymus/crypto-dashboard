@@ -65,8 +65,8 @@ export const getCoinbaseTransactionsForAccount: RequestHandler = async (
                     transactionFiatAmount: transaction.native_amount.amount,
                     transactionFiatCurrency: transaction.native_amount.currency,
                     transactionTitle: transaction.details.title
-                }
-            });
+                }   
+            }).reverse()
             return res.status(200).json({transactions : mappedTransactions});
         },
         () => {
