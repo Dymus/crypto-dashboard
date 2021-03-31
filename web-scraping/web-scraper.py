@@ -34,15 +34,16 @@ while True:
     urls = {}
     titles = {}
     our_database.news.drop()
-    for sub in subreddits:
-        urls[sub] = []
-        titles[sub] = []
-    j = 0
+    
     for cryptocurrency in cryptocurrencies:
+        for sub in subreddits:
+            urls[sub] = []
+            titles[sub] = []
+
         count = 0
         for sub in subreddits:
             subreddit = reddit.subreddit(sub)
-            for submission in subreddit.search(cryptocurrency, sort = "top", limit = None, time_filter="day"):
+            for submission in subreddit.search(cryptocurrency, sort = "top", limit = 3, time_filter="day"):
                 count += 1
                 urls[f'{subreddit}'].append(submission.url)
                 titles[f'{subreddit}'].append(submission.title)
@@ -57,13 +58,12 @@ while True:
  
         for sub in subreddits:
             #f.write(f'Here are the links to top trending reddit submissions from {sub}:\n')
-            for i in range(3):
-                soup = BeautifulSoup(requests.get(urls[sub][j]).content,'html.parser')
+            for i in range(len(urls[sub])):
+                soup = BeautifulSoup(requests.get(urls[sub][i]).content,'html.parser')
                 image = soup.find('meta',property='og:image')
                 image_url = image['content'] if image else 'https://www.mcleodgaming.com/wp-content/uploads/2019/05/reddit_logo-150x150.png'
                 #f.write(f'\t {urls[sub][i][0]} \n')
-                news.insert_one({'cryptocurrency': cryptocurrency, 'scraped_at': now, 'image' : image_url, 'top': i+1, 'subreddit': sub, 'url': urls[sub][j], 'title': titles[sub][j]})
-                j += 1
+                news.insert_one({'cryptocurrency': cryptocurrency, 'scraped_at': now, 'image' : image_url, 'top': i+1, 'subreddit': sub, 'url': urls[sub][i], 'title': titles[sub][i]})
         #f.close() 
  
         # Write to MongoDB
