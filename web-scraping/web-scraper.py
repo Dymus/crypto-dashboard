@@ -18,18 +18,18 @@ client = MongoClient('mongodb+srv://sa:CryptoDashboard@cryptodashboard.0obwg.mon
 our_database = client['CryptoDashboard']
 collection = our_database['trends']
 news = our_database['news']
-cryptocurrencies = []
+cryptocurrencies = ['Bitcoin', 'Ethereum', 'Cardano']
  
 # Specifying subreddits to scrape
 subreddits = ['CryptoCurrency', 'CryptoCurrencies', 'CryptoCurrencyTrading']  # make a list of subreddits you want to scrape the data from
- 
+'''
 response = requests.get('https://api.coingecko.com/api/v3/coins/markets?vs_currency=eur&order=market_cap_desc&per_page=200&page=1&sparkline=false').text
 response_info = json.loads(response)
  
 for coin in response_info:
     cryptocurrencies.append(coin['name'])
 # Keywords to look for trends
- 
+'''
 while True:
     urls = {}
     titles = {}
@@ -37,15 +37,15 @@ while True:
     for sub in subreddits:
         urls[sub] = []
         titles[sub] = []
- 
+    j = 0
     for cryptocurrency in cryptocurrencies:
         count = 0
         for sub in subreddits:
             subreddit = reddit.subreddit(sub)
             for submission in subreddit.search(cryptocurrency, sort = "top", limit = None, time_filter="day"):
                 count += 1
-                urls[f'{subreddit}'].append([submission.url, submission.score])
-                titles[f'{subreddit}'].append([submission.title])
+                urls[f'{subreddit}'].append(submission.url)
+                titles[f'{subreddit}'].append(submission.title)
  
         # Getting a timestamp
         now = datetime.datetime.now()
@@ -58,12 +58,12 @@ while True:
         for sub in subreddits:
             #f.write(f'Here are the links to top trending reddit submissions from {sub}:\n')
             for i in range(3):
-                soup = BeautifulSoup(requests.get(urls[sub][i][0]).content,'html.parser')
+                soup = BeautifulSoup(requests.get(urls[sub][j]).content,'html.parser')
                 image = soup.find('meta',property='og:image')
                 image_url = image['content'] if image else 'https://www.mcleodgaming.com/wp-content/uploads/2019/05/reddit_logo-150x150.png'
                 #f.write(f'\t {urls[sub][i][0]} \n')
-                news.insert_one({'cryptocurrency': cryptocurrency, 'scraped_at': now, 'image' : image_url, 'top': i+1, 'subreddit': sub, 'url': urls[sub][i][0], 'title': titles[sub][i][0]})
- 
+                news.insert_one({'cryptocurrency': cryptocurrency, 'scraped_at': now, 'image' : image_url, 'top': i+1, 'subreddit': sub, 'url': urls[sub][j], 'title': titles[sub][j]})
+                j += 1
         #f.close() 
  
         # Write to MongoDB
