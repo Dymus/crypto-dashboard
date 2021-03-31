@@ -18,6 +18,9 @@ export class News {
 
   @prop({ required: true })
   public title: string;
+
+  @prop({ required: true })
+  public image: string;
 }
 
 export const NewsModel = getModelForClass(News);

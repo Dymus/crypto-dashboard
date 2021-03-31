@@ -10,9 +10,6 @@ router.get(
   '/trends/:cryptocurrencyName/:scrapedAfter',
   getTrendsForCryptocurrency
 );
-router.get(
-  '/news/:cryptocurrencyName/:subredditName',
-  getNewsForCryptocurrency
-);
+router.get('/news/:cryptocurrencyName', getNewsForCryptocurrency);
 
 export default router;

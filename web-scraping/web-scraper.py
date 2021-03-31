@@ -1,6 +1,9 @@
 from pymongo import MongoClient
 import praw
 import datetime, time
+from bs4 import BeautifulSoup
+import requests
+import json
 
 print("Started running the script")
 
@@ -55,8 +58,11 @@ while True:
         for sub in subreddits:
             #f.write(f'Here are the links to top trending reddit submissions from {sub}:\n')
             for i in range(3):
+                soup = BeautifulSoup(requests.get(urls[sub][i][0]).content,'html.parser')
+                image = soup.find('meta',property='og:image')
+                image_url = image['content'] if image else 'https://www.mcleodgaming.com/wp-content/uploads/2019/05/reddit_logo-150x150.png'
                 #f.write(f'\t {urls[sub][i][0]} \n')
-                news.insert_one({'cryptocurrency': cryptocurrency, 'scraped_at': now, 'top': i+1, 'subreddit': sub, 'url': urls[sub][i][0], 'title': titles[sub][i][0]})
+                news.insert_one({'cryptocurrency': cryptocurrency, 'scraped_at': now, 'image' : image_url, 'top': i+1, 'subreddit': sub, 'url': urls[sub][i][0], 'title': titles[sub][i][0]})
  
         #f.close() 
  

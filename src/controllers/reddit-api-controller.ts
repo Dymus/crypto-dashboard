@@ -28,7 +28,7 @@ export const getNewsForCryptocurrency: RequestHandler = async (
   res,
   next
 ) => {
-  getNews(req.params.cryptocurrencyName, req.params.subredditName)
+  getNews(req.params.cryptocurrencyName)
     .then(
       (news) => {
         return res.status(200).json(news);
