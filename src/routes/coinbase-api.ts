@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
     getCoinbaseWallet,
     getCoinbaseTransactionsForAccount,
+    getCoinbasePortfolioPerformance,
 } from "../controllers/coinbase-api-controller";
 import { isAuth } from "../controllers/auth-controller"
 import { isCoinbaseAuth } from "../controllers/coinbase-auth-controller";
@@ -20,6 +21,12 @@ router.get("/wallet", [
     isAuth,
     isCoinbaseAuth
 ], getCoinbaseWallet
+);
+
+router.get("/portfolio-performance", [
+    isAuth,
+    isCoinbaseAuth
+], getCoinbasePortfolioPerformance
 );
 
 export default router;

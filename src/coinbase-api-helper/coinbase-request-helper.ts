@@ -3,7 +3,7 @@ import { saveCoinbaseTokens } from "../database/userDB";
 import cryptoJs from 'crypto-js';
 
 export const coinbaseGet = (url: string, user: any) => {
-  return axios.get(url, { headers: { "Authorization": `Bearer ${user.coinbaseTokens.access_token}`, "Accept-Language": "en" } })
+  return axios.get(url, { headers: { "Authorization": `Bearer ${user.coinbaseTokens.access_token}`, "Accept-Language": "en", "Content-Type" : "application/json" } })
     .then(
       (response) => { return Promise.resolve(response) },
       (error) => {

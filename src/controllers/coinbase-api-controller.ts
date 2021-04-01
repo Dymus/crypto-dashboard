@@ -65,12 +65,35 @@ export const getCoinbaseTransactionsForAccount: RequestHandler = async (
                     transactionFiatAmount: transaction.native_amount.amount,
                     transactionFiatCurrency: transaction.native_amount.currency,
                     transactionTitle: transaction.details.title
-                }   
+                }
             }).reverse()
-            return res.status(200).json({transactions : mappedTransactions});
+            return res.status(200).json({ transactions: mappedTransactions });
         },
         () => {
             throw next(new RequestError(404, 'Could not find your transactions'));
+        }
+    );
+};
+
+export const getCoinbasePortfolioPerformance: RequestHandler = async (req, res, next) => {
+    if (!validationResult(req).isEmpty()) {
+        throw next(
+            new RequestError(
+                422,
+                "Invalid input",
+                validationResult(req).array()
+            )
+        );
+    }
+    coinbaseGet(
+        "https://www.coinbase.com/api/v3/coinbase.public_api.authed.portfolio_performance.PerformanceCalculator/Calculate?q=eyJkaXNwbGF5Q3VycmVuY3kiOiJFVVIiLCJwZXJpb2QiOiJVTktOT1dOIn0%3D"
+        , req.user
+    ).then(
+        (response) => {
+            return res.status(200).json(response.data)
+        },
+        () => {
+            throw next(new RequestError(404, 'Could not find your portfolio data'));
         }
     );
 };
