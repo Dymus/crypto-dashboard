@@ -54,11 +54,12 @@ connect(process.env.MONGO_URI, {
         app.use((err: Error, _: Request, res: Response, _2: NextFunction) => {
             if (err instanceof RequestError) {
                 return res.status((err as RequestError).status).json({
+                    title: (err as RequestError).title,
                     errorMessage: (err as RequestError).message,
                     errors: (err as RequestError).errors,
                 });
             } else {
-                return res.status(500).json({ errorMessage: err.message });
+                return res.status(500).json({ title: "Unexpected Server Error", errorMessage: err.message });
             }
         });
 

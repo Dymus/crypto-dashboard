@@ -17,7 +17,7 @@ export const refreshJWTToken: RequestHandler = (req, res, next) => {
       (newJWTToken) => { return res.status(201).json({ jwt: newJWTToken }) },
       () => {
         return next(
-          new RequestError(401, 'Unauthorized Access', [
+          new RequestError(401, 'Unauthorized Access', 'Refresh token expired, please log in again.', [
             'ExpiredRefreshError',
           ])
         );
@@ -30,7 +30,7 @@ export const refreshJWTToken: RequestHandler = (req, res, next) => {
 export const isAuth: RequestHandler = (req, _, next) => {
   try {
     if (!req.get('Authorization')) {
-      throw new RequestError(401, 'Unauthorized Access');
+      throw new RequestError(401, 'Unauthorized Access', 'Only authorized users have access to this page, please log in.');
     }
 
     verify(
@@ -43,12 +43,12 @@ export const isAuth: RequestHandler = (req, _, next) => {
             req.user = loadedUser;
             next();
           } else {
-            next(new RequestError(401, 'Unauthorized Access', ['TokenExpiredError']));
+            next(new RequestError(401, 'Unauthorized Access', 'Your token expired, please refresh it or log in again.', ['TokenExpiredError']));
           }
         } else if (error.name === 'TokenExpiredError') {
-          next(new RequestError(401, 'Unauthorized Access', ['TokenExpiredError']));
+          next(new RequestError(401, 'Unauthorized Access', 'Your token expired, please refresh it or log in again.', ['TokenExpiredError']));
         } else {
-          next(new RequestError(401, 'Unauthorized Access'));
+          next(new RequestError(401, 'Unauthorized Access', 'Invalid token, please log in again.'));
         }
       }
     );
@@ -60,7 +60,7 @@ export const isAuth: RequestHandler = (req, _, next) => {
 export const postRegister: RequestHandler = async (req, res, next) => {
   if (!validationResult(req).isEmpty()) {
     return next(
-      new RequestError(422, 'Invalid input', validationResult(req).array())
+      new RequestError(422, 'Invalid input', validationResult(req).array().map(error => error.msg).join(". "), validationResult(req).array())
     );
   }
   createUser({
@@ -72,7 +72,7 @@ export const postRegister: RequestHandler = async (req, res, next) => {
         return res.status(201).send();
       },
       () => {
-        throw new RequestError(409, 'User could not be created');
+        throw new RequestError(409, 'User Not Created', 'User could not be created. Please reload the page and try again. If the problem persists, contact the support.');
       }
     )
     .catch((internalError) => {
@@ -83,7 +83,7 @@ export const postRegister: RequestHandler = async (req, res, next) => {
 export const postLogin: RequestHandler = async (req, res, next) => {
   if (!validationResult(req).isEmpty()) {
     return next(
-      new RequestError(422, 'Invalid input', validationResult(req).array())
+      new RequestError(422, 'Invalid input', validationResult(req).array().map(error => error.msg).join(". "), validationResult(req).array())
     );
   }
 
@@ -164,12 +164,13 @@ export const postLogin: RequestHandler = async (req, res, next) => {
         } else {
           throw new RequestError(
             401,
+            'Invalid Credentials',
             'Password does not match with this email'
           );
         }
       },
       () => {
-        throw new RequestError(404, 'User could not be found');
+        throw new RequestError(404, 'User Not Found', 'User could not be found');
       }
     )
     .catch((internalError) => {

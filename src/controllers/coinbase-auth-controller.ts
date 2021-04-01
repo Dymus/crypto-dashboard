@@ -11,7 +11,7 @@ export const isCoinbaseAuth: RequestHandler = async (req, _, next) => {
     throw next(
       new RequestError(
         401,
-        "Unauthorized Access. You haven't connected this app to Coinbase yet."
+        "Unauthorized Access", `You haven't connected Coinbase to ${process.env.APP_NAME} yet. Please do so, and repeat the request.`
       )
     );
   }
@@ -19,16 +19,29 @@ export const isCoinbaseAuth: RequestHandler = async (req, _, next) => {
 
 export const postSaveCoinbaseToken: RequestHandler = async (req, res, next) => {
   if (!validationResult(req).isEmpty()) {
-    throw next(
-      new RequestError(422, 'Invalid input', validationResult(req).array())
+    return next(
+      new RequestError(422, 'Invalid input', validationResult(req).array().map(error => error.msg).join(". "), validationResult(req).array())
     );
   }
   saveCoinbaseTokens(req.user._id, req.body.coinbaseTokens).then(
     () => refreshJWT(req.cookies.refreshToken),
-    () => res.status(500).json({ errorMessage: 'Could not save Coinbase tokens to the DB' })
+    () => {
+      throw next(
+        new RequestError(
+          401,
+          "Unexpected Error", `The server encountered an issue when trying to connect your Coinbase account with ${process.env.APP_NAME}`
+        )
+      )
+    }
   ).then(
     (newJWTToken) => res.status(201).json({ message: 'Coinbase tokens saved successfully', jwt: newJWTToken }),
-    () =>
-      res.status(401).json({ errorMessage: 'Could not reauthenticate user' })
+    () => {
+      throw next(
+        new RequestError(
+          401,
+          "Unexpected Error", `The server encountered an issue when trying to reauthenticate your Coinbase account with ${process.env.APP_NAME}`
+        )
+      )
+    }
   );
 };
