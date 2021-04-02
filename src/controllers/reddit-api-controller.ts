@@ -9,7 +9,7 @@ export const getTrendsForCryptocurrency: RequestHandler = async (
   res,
   next
 ) => {
-  getTrends(req.params.cryptocurrencyName, req.params.scrapedAfter)
+  getTrends()
     .then(
       (trends) => {
         return res.status(200).json(trends);

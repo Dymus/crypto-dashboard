@@ -7,7 +7,7 @@ import {
 const router = Router();
 
 router.get(
-  '/trends/:cryptocurrencyName/:scrapedAfter',
+  '/trends',
   getTrendsForCryptocurrency
 );
 router.get('/news/:cryptocurrencyName', getNewsForCryptocurrency);
