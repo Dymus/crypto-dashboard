@@ -21,7 +21,7 @@ const myEnv = config();
 dotenvExpand(myEnv);
 
 const runScript = () => {
-  return spawn('py', [path.join(__dirname, '../web-scraping/web-scraper.py')]);
+  return spawn('py', [path.join(__dirname, '../web-scraping/trends-scraper.py')]);
 };
 
 connect(process.env.MONGO_URI, {
@@ -67,7 +67,7 @@ connect(process.env.MONGO_URI, {
 
     server.listen(3000, () => {
       console.log('listening on port 3000');
-      //runScript();
+      // runScript();
     });
   })
   .catch((error) => {

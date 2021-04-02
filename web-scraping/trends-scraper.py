@@ -1,7 +1,6 @@
 from pymongo import MongoClient
 import praw
 import datetime, time
-from bs4 import BeautifulSoup
 import requests
 import json
 
@@ -16,8 +15,7 @@ reddit = praw.Reddit(client_id="fEa4it1xgroveg",#my client id
 # MongoDB client initialization
 client = MongoClient('mongodb+srv://sa:CryptoDashboard@cryptodashboard.0obwg.mongodb.net/CryptoDashboard')
 our_database = client['CryptoDashboard']
-collection = our_database['trends']
-news = our_database['news']
+trends = our_database['trends']
 cryptocurrencies = ['Bitcoin', 'Ethereum', 'Cardano']
  
 # Specifying subreddits to scrape
@@ -28,7 +26,6 @@ response_info = json.loads(response)
  
 for coin in response_info:
     cryptocurrencies.append(coin['name'])
-# Keywords to look for trends
 '''
 while True:
     urls = {}
@@ -43,7 +40,7 @@ while True:
         count = 0
         for sub in subreddits:
             subreddit = reddit.subreddit(sub)
-            for submission in subreddit.search(cryptocurrency, sort = "top", limit = 3, time_filter="day"):
+            for submission in subreddit.search(cryptocurrency, sort = "top", limit = None, time_filter="day"):
                 count += 1
                 urls[f'{subreddit}'].append(submission.url)
                 titles[f'{subreddit}'].append(submission.title)
@@ -52,20 +49,6 @@ while True:
         now = datetime.datetime.now()
         timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
  
-        # Writing to file
-        #f = open(f'{cryptocurrency}.txt', 'a')
-        #f.write(f'Date: {timestamp} \tTrending {count} times.\n\n')
- 
-        for sub in subreddits:
-            #f.write(f'Here are the links to top trending reddit submissions from {sub}:\n')
-            for i in range(len(urls[sub])):
-                soup = BeautifulSoup(requests.get(urls[sub][i]).content,'html.parser')
-                image = soup.find('meta',property='og:image')
-                image_url = image['content'] if image else 'https://www.mcleodgaming.com/wp-content/uploads/2019/05/reddit_logo-150x150.png'
-                #f.write(f'\t {urls[sub][i][0]} \n')
-                news.insert_one({'cryptocurrency': cryptocurrency, 'scraped_at': now, 'image' : image_url, 'top': i+1, 'subreddit': sub, 'url': urls[sub][i], 'title': titles[sub][i]})
-        #f.close() 
- 
         # Write to MongoDB
-        #collection.insert_one({'cryptocurrency': cryptocurrency, 'scraped_at': now, 'count': count})
+        trends.insert_one({'cryptocurrency': cryptocurrency, 'scraped_at': now, 'count': count})
     time.sleep(900)
