@@ -1,8 +1,8 @@
 import { RequestHandler } from 'express';
-import axios from 'axios';
 import { getTrends } from '../database/trendDB';
 import { getNews } from '../database/newsDB';
 import { RequestError } from '../types/RequestError';
+import { getHotTrends } from '../database/hotTrendDB';
 
 export const getTrendsForCryptocurrency: RequestHandler = async (
   req,
@@ -35,6 +35,22 @@ export const getNewsForCryptocurrency: RequestHandler = async (
       },
       () => {
         throw new RequestError(404, 'Cryptocurrency could not be found');
+      }
+    )
+    .catch((internalError) => {
+      return next(internalError);
+    });
+};
+
+export const getHotTrendsAll: RequestHandler = async (req, res, next) => {
+  getHotTrends()
+    .then(
+      (hotTrends) => {
+        console.log(hotTrends)
+        return res.status(200).json(hotTrends);
+      },
+      () => {
+        throw new RequestError(404, 'Trends not found');
       }
     )
     .catch((internalError) => {
