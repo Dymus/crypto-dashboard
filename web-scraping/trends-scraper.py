@@ -21,7 +21,7 @@ client = MongoClient(
 )
 our_database = client["CryptoDashboard"]
 trends = our_database["trends"]
-hotTrends = our_database['hotTrends']
+hots = our_database['hots']
 cryptocurrencies = ["Bitcoin", "Ethereum", "Cardano"]
 
 # Specifying subreddits to scrape
@@ -64,7 +64,7 @@ while True:
     titles = []
     scores = []
     dates = []
-    our_database.hotTrends.delete_many({})
+    our_database.hots.delete_many({})
     for submission in reddit.subreddit("CryptoCurrency").hot(limit=10):
         urls.append(submission.url)
         titles.append(submission.title)
@@ -74,5 +74,5 @@ while True:
         soup = BeautifulSoup(requests.get(urls[i]).content,'html.parser')
         image = soup.find('meta', property='og:image')
         image_url = image['content'] if image else 'https://www.mcleodgaming.com/wp-content/uploads/2019/05/reddit_logo-150x150.png'
-        hotTrends.insert_one({'title': titles[i], 'score': scores[i], 'url': urls[i], 'image' : image_url})
+        hots.insert_one({'title': titles[i], 'score': scores[i], 'url': urls[i], 'image' : image_url})
     time.sleep(900)

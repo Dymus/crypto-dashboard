@@ -1,8 +1,8 @@
 import { RequestHandler } from 'express';
 import { getTrends } from '../database/trendDB';
 import { getNews } from '../database/newsDB';
+import { getHots } from '../database/hotDB';
 import { RequestError } from '../types/RequestError';
-import { getHotTrends } from '../database/hotTrendDB';
 
 export const getTrendsForCryptocurrency: RequestHandler = async (
   req,
@@ -42,15 +42,18 @@ export const getNewsForCryptocurrency: RequestHandler = async (
     });
 };
 
-export const getHotTrendsAll: RequestHandler = async (req, res, next) => {
-  getHotTrends()
+export const getHotTrends: RequestHandler = async (
+  req,
+  res,
+  next
+) => {
+  getHots()
     .then(
       (hotTrends) => {
-        console.log(hotTrends)
         return res.status(200).json(hotTrends);
       },
       () => {
-        throw new RequestError(404, 'Trends not found');
+        throw new RequestError(404, 'Hot trends could not be found');
       }
     )
     .catch((internalError) => {

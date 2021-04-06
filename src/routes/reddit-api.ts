@@ -2,13 +2,13 @@ import { Router } from 'express';
 import {
   getTrendsForCryptocurrency,
   getNewsForCryptocurrency,
-  getHotTrendsAll
+  getHotTrends
 } from '../controllers/reddit-api-controller';
 
 const router = Router();
 
 router.get('/trends', getTrendsForCryptocurrency);
 router.get('/news/:cryptocurrencyName', getNewsForCryptocurrency);
-router.get('/hotTrends', getHotTrendsAll)
+router.get('/hots', getHotTrends);
 
 export default router;
