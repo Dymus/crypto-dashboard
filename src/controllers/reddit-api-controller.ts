@@ -15,7 +15,7 @@ export const getTrendsForCryptocurrency: RequestHandler = async (
         return res.status(200).json(trends);
       },
       () => {
-        throw new RequestError(404, 'Cryptocurrency could not be found');
+        throw new RequestError(404, "Reddit Error", 'Cryptocurrency could not be found');
       }
     )
     .catch((internalError) => {
@@ -34,7 +34,7 @@ export const getNewsForCryptocurrency: RequestHandler = async (
         return res.status(200).json(news);
       },
       () => {
-        throw new RequestError(404, 'Cryptocurrency could not be found');
+        throw new RequestError(404, "Reddit Error", 'Cryptocurrency could not be found');
       }
     )
     .catch((internalError) => {
@@ -53,7 +53,7 @@ export const getHotTrends: RequestHandler = async (
         return res.status(200).json(hotTrends);
       },
       () => {
-        throw new RequestError(404, 'Hot trends could not be found');
+        throw new RequestError(404, "Reddit Error", 'Hot trends could not be found');
       }
     )
     .catch((internalError) => {
