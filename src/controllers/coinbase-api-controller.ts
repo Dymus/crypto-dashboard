@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { RequestError } from '../types/RequestError';
-import { coinbaseGet } from '../coinbase-api-helper/coinbase-request-helper';
+import { coinbaseGet } from '../request-helpers/coinbase-request-helper';
 import { validationResult } from "express-validator";
 
 export const getCoinbaseWallet: RequestHandler = async (req, res, next) => {
@@ -12,12 +12,11 @@ export const getCoinbaseWallet: RequestHandler = async (req, res, next) => {
             (response) => {
                 const walletAccounts = response.data.data.map((account) => {
                     return {
-                        accountId: account.id,
+                        coinbaseAccountId: account.id,
                         type: account.type,
                         code: account.currency.code,
                         name: account.currency.name,
                         color: account.currency.color,
-                        assetId: account.currency.asset_id,
                         balance: +account.balance.amount,
                         slug: account.currency.slug,
                     }
@@ -52,15 +51,15 @@ export const getCoinbaseTransactionsForAccount: RequestHandler = async (
         (response) => {
             const mappedTransactions = response.data.data.map((transaction) => {
                 return {
-                    transactionId: transaction.id,
-                    transactionDate: transaction.created_at,
-                    transactionType: transaction.type,
-                    transactionStatus: transaction.status,
-                    transactionAmount: transaction.amount.amount,
-                    transactionCurrency: transaction.amount.currency,
-                    transactionFiatAmount: transaction.native_amount.amount,
-                    transactionFiatCurrency: transaction.native_amount.currency,
-                    transactionTitle: transaction.details.title
+                    transactionId: transaction.id, // order_id
+                    transactionDate: transaction.created_at, // timestamp
+                    transactionType: transaction.type, // type
+                    transactionStatus: transaction.status, // "completed"
+                    transactionAmount: transaction.amount.amount, // aggregated amount for all with the same order_id
+                    transactionCurrency: transaction.amount.currency, // part of the symbol
+                    transactionFiatAmount: transaction.native_amount.amount, // aggregated amount+fee_amount but in eur for all with the same order_id
+                    transactionFiatCurrency: transaction.native_amount.currency, // EUR
+                    transactionTitle: transaction.details.title // on exchange = "on gemini"
                 }
             }).reverse()
             return res.status(200).json({ transactions: mappedTransactions });
