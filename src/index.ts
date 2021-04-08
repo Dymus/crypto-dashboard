@@ -9,13 +9,14 @@ import dotenvExpand from 'dotenv-expand';
 import { createServer } from 'http';
 
 // import binanceAuthRoutes from "./routes/binance-auth";
-import userRoutes from './routes/user';
-import authRoutes from './routes/auth';
-import coinbaseAuthRoutes from './routes/coinbase-auth';
-import coinbaseApiRoutes from './routes/coinbase-api';
-import redditApiRoutes from './routes/reddit-api';
-import { RequestError } from './types/RequestError';
-import cookieParser from 'cookie-parser';
+import userRoutes from "./routes/user";
+import authRoutes from "./routes/auth";
+import coinbaseAuthRoutes from "./routes/coinbase-auth";
+import coinbaseApiRoutes from "./routes/coinbase-api";
+import redditApiRoutes from "./routes/reddit-api";
+import geminiApiRoutes from "./routes/gemini-api";
+import { RequestError } from "./types/RequestError";
+import cookieParser from "cookie-parser"
 
 const myEnv = config();
 dotenvExpand(myEnv);
@@ -45,18 +46,24 @@ connect(process.env.MONGO_URI, {
       next();
     });
 
-    app.use(authRoutes);
-    app.use('/user', userRoutes);
-    // app.use("/binance", binanceAuthRoutes);
-    app.use('/coinbase', coinbaseAuthRoutes);
-    app.use('/coinbase-api', coinbaseApiRoutes);
-    app.use('/reddit-api', redditApiRoutes);
+        app.use(authRoutes);
+        app.use("/user", userRoutes);
+        // app.use("/binance", binanceAuthRoutes);
+        app.use("/coinbase", coinbaseAuthRoutes);
+        app.use("/coinbase-api", coinbaseApiRoutes);
+        app.use("/reddit-api", redditApiRoutes);
+        app.use('/gemini-api', geminiApiRoutes);
 
-    app.use((err: Error, _: Request, res: Response, _2: NextFunction) => {
-      if (err instanceof RequestError) {
-        return res.status((err as RequestError).status).json({
-          errorMessage: (err as RequestError).message,
-          errors: (err as RequestError).errors,
+        app.use((err: Error, _: Request, res: Response, _2: NextFunction) => {
+            if (err instanceof RequestError) {
+                return res.status((err as RequestError).status).json({
+                    title: (err as RequestError).title,
+                    errorMessage: (err as RequestError).message,
+                    errors: (err as RequestError).errors,
+                });
+            } else {
+                return res.status(500).json({ title: "Unexpected Server Error", errorMessage: err.message });
+            }
         });
       } else {
         return res.status(500).json({ errorMessage: err.message });

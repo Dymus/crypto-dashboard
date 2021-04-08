@@ -23,7 +23,6 @@ export const coinbaseGet = (url: string, user: any) => {
         } 
       }
   ).catch((error) => {
-    console.log(error)
     return Promise.reject(error)
   })
 }
