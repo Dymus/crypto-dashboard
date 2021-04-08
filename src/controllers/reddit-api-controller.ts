@@ -1,15 +1,59 @@
-import { RequestHandler } from "express";
-import { getTrends } from "../database/trendDB";
-import { RequestError } from "../types/RequestError";
+import { RequestHandler } from 'express';
+import { getTrends } from '../database/trendDB';
+import { getNews } from '../database/newsDB';
+import { getHots } from '../database/hotDB';
+import { RequestError } from '../types/RequestError';
 
-export const getTrendsForCryptocurrency: RequestHandler = async (req, res, next) => {
-    getTrends(req.params.cryptocurrencyName, req.params.scrapedAfter)
+export const getTrendsForCryptocurrency: RequestHandler = async (
+  req,
+  res,
+  next
+) => {
+  getTrends()
     .then(
       (trends) => {
-        return res.status(200).json(trends)
+        return res.status(200).json(trends);
       },
       () => {
-        throw new RequestError(404, "Trends Not Found","Could not find trends for the given cryptocurrency.");
+        throw new RequestError(404, 'Cryptocurrency could not be found');
+      }
+    )
+    .catch((internalError) => {
+      return next(internalError);
+    });
+};
+
+export const getNewsForCryptocurrency: RequestHandler = async (
+  req,
+  res,
+  next
+) => {
+  getNews(req.params.cryptocurrencyName)
+    .then(
+      (news) => {
+        return res.status(200).json(news);
+      },
+      () => {
+        throw new RequestError(404, 'Cryptocurrency could not be found');
+      }
+    )
+    .catch((internalError) => {
+      return next(internalError);
+    });
+};
+
+export const getHotTrends: RequestHandler = async (
+  req,
+  res,
+  next
+) => {
+  getHots()
+    .then(
+      (hotTrends) => {
+        return res.status(200).json(hotTrends);
+      },
+      () => {
+        throw new RequestError(404, 'Hot trends could not be found');
       }
     )
     .catch((internalError) => {

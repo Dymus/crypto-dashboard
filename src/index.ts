@@ -1,12 +1,12 @@
-import path from 'path'
-import { spawn } from 'child_process'
-import express from "express";
-import { Request, Response, NextFunction } from "express";
-import { connect } from "mongoose";
-import { json } from "body-parser";
-import { config } from "dotenv";
-import dotenvExpand from "dotenv-expand"
-import { createServer } from "http";
+import path from 'path';
+import { spawn } from 'child_process';
+import express from 'express';
+import { Request, Response, NextFunction } from 'express';
+import { connect } from 'mongoose';
+import { json } from 'body-parser';
+import { config } from 'dotenv';
+import dotenvExpand from 'dotenv-expand';
+import { createServer } from 'http';
 
 // import binanceAuthRoutes from "./routes/binance-auth";
 import userRoutes from "./routes/user";
@@ -18,32 +18,33 @@ import geminiApiRoutes from "./routes/gemini-api";
 import { RequestError } from "./types/RequestError";
 import cookieParser from "cookie-parser"
 
-const myEnv = config()
-dotenvExpand(myEnv)
+const myEnv = config();
+dotenvExpand(myEnv);
 
 const runScript = () => {
-    return spawn('py', [
-        path.join(__dirname, '../web-scraping/web-scraper.py'),
-    ]);
-}
+  return spawn('py', [path.join(__dirname, '../web-scraping/trends-scraper.py')]);
+};
 
 connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
 })
-    .then(() => {
-        const app = express();
+  .then(() => {
+    const app = express();
 
-        app.use(json());
-        app.use(cookieParser());
+    app.use(json());
+    app.use(cookieParser());
 
-        app.use((_: Request, res: Response, next: NextFunction) => {
-            res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-            res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
-            res.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, DELETE");
-            res.setHeader("Access-Control-Allow-Credentials", "true")
-            next();
-        });
+    app.use((_: Request, res: Response, next: NextFunction) => {
+      res.setHeader(
+        'Access-Control-Allow-Headers',
+        'Content-Type, Authorization'
+      );
+      res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8080');
+      res.setHeader('Access-Control-Allow-Methods', 'POST, PUT, GET, DELETE');
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+      next();
+    });
 
         app.use(authRoutes);
         app.use("/user", userRoutes);
@@ -64,14 +65,18 @@ connect(process.env.MONGO_URI, {
                 return res.status(500).json({ title: "Unexpected Server Error", errorMessage: err.message });
             }
         });
-
-        const server = createServer(app)
-
-        server.listen(3000, () => {
-            console.log("listening on port 3000");
-            runScript()
-        });
-    })
-    .catch((error) => {
-        console.log(error);
+      } else {
+        return res.status(500).json({ errorMessage: err.message });
+      }
     });
+
+    const server = createServer(app);
+
+    server.listen(3000, () => {
+      console.log('listening on port 3000');
+      // runScript();
+    });
+  })
+  .catch((error) => {
+    console.log(error);
+  });
