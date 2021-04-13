@@ -5,7 +5,7 @@ import CryptoJS from 'crypto-js';
 const geminiAxiosInstance = axios.create({ baseURL: "https://api.sandbox.gemini.com/v1" });
 
 // set headers including the encoding of payload and signature
-export const geminiPost = (apiKey: string, apiSecret: string, url: string, payload?: any, ...args: any[]) => {
+export const geminiGet = (apiKey: string, apiSecret: string, url: string, payload?: any, ...args: any[]) => {
   const encodedPayload = new Buffer(payload).toString('base64');
   return geminiAxiosInstance.post(url, null,
     {
