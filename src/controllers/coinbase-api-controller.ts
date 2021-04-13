@@ -19,6 +19,7 @@ export const getCoinbaseWallet: RequestHandler = async (req, res, next) => {
                         color: account.currency.color,
                         balance: +account.balance.amount,
                         slug: account.currency.slug,
+                        createdAt: Date.parse(account.created_at)
                     }
                 })
                 const euroWallet = walletAccounts.splice(walletAccounts.findIndex((account) => account.type === "fiat"), 1)[0]
