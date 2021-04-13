@@ -8,6 +8,14 @@ export class CoinbaseAccessToken {
     public refresh_token: string;
 }
 
+export class GeminiKeys {
+    @prop()
+    public apiKey: string;
+
+    @prop()
+    public apiSecret: string;
+}
+
 export class User {
     @prop({ required: true })
     public email: string;
@@ -17,6 +25,9 @@ export class User {
 
     @prop({ _id: false, default: null })
     coinbaseTokens?: CoinbaseAccessToken;
+
+    @prop({ _id: false, default: null})
+    geminiKeys?: GeminiKeys;
 }
 
 export const UserModel = getModelForClass(User);

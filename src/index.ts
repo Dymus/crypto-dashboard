@@ -15,6 +15,7 @@ import coinbaseAuthRoutes from "./routes/coinbase-auth";
 import coinbaseApiRoutes from "./routes/coinbase-api";
 import redditApiRoutes from "./routes/reddit-api";
 import geminiApiRoutes from "./routes/gemini-api";
+import geminiAuthRoutes from "./routes/gemini-auth"
 import { RequestError } from "./types/RequestError";
 import cookieParser from "cookie-parser"
 
@@ -53,6 +54,7 @@ connect(process.env.MONGO_URI, {
     app.use("/coinbase-api", coinbaseApiRoutes);
     app.use("/reddit-api", redditApiRoutes);
     app.use('/gemini-api', geminiApiRoutes);
+    app.use('/gemini', geminiAuthRoutes);
 
     app.use((err: Error, _: Request, res: Response, _2: NextFunction) => {
         if (err instanceof RequestError) {

@@ -34,3 +34,16 @@ export const saveCoinbaseTokens = async (
     return user.save();
   });
 };
+
+export const setGeminiApiKeys = async (userId: string, apiKey: string, apiSecret: string) => {
+  return UserModel.findById(userId).then((user) => {
+    user.geminiKeys = {
+      apiKey: apiKey,
+      apiSecret: cryptoJs.AES.encrypt(
+        apiSecret,
+        user.password
+      ).toString(),
+    };
+    return user.save();
+  });
+};
