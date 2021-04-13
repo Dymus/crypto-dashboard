@@ -3,7 +3,6 @@ import { setGeminiApiKeys } from "../database/userDB";
 import { RequestError } from "../types/RequestError";
 
 export const setGeminiApiAndSecret: RequestHandler = async (req, res, next) => {
-    console.log(req.user)
     setGeminiApiKeys(req.user._id, req.body.apiKey, req.body.apiSecret)
     .then((savedUser) => res.status(201).json({ message: 'Gemini tokens saved successfully', user: savedUser }),
         () => {
