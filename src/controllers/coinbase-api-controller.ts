@@ -4,13 +4,10 @@ import { coinbaseGet } from '../request-helpers/coinbase-request-helper';
 import { validationResult } from "express-validator";
 
 export const getCoinbaseWallet: RequestHandler = async (req, res, next) => {
-    coinbaseGet(
-        'https://api.coinbase.com/v2/accounts?limit=99',
-        req.user
-    )
-        .then(
-            (response) => {
-                const walletAccounts = response.data.data.map((account) => {
+    return coinbaseGet('https://api.coinbase.com/v2/user', req.user).then((userResponse) => {
+        coinbaseGet('https://api.coinbase.com/v2/accounts?limit=99', req.user)
+            .then((walletAccountsResponse) => {
+                const walletAccounts = walletAccountsResponse.data.data.map((account) => {
                     return {
                         coinbaseAccountId: account.id,
                         type: account.type,
@@ -23,16 +20,18 @@ export const getCoinbaseWallet: RequestHandler = async (req, res, next) => {
                     }
                 })
                 const euroWallet = walletAccounts.splice(walletAccounts.findIndex((account) => account.type === "fiat"), 1)[0]
-                res.status(200).json({
-                    walletAccounts, euroWallet
-                })
+                return res.status(200).json({ walletAccounts, euroWallet, createdAt: Date.parse(userResponse.data.data.created_at) })
             },
-            (error) => {
-                throw next(new RequestError(404, 'Internal Server Error', 'Could not find your Coinbase wallet. This is most likely an internal error, please contact the support.'));
-            }
-        ).catch((internalError) => {
-            throw next(internalError);
-        })
+                () => {
+                    throw next(new RequestError(404, 'Internal Server Error', 'Could not find your Coinbase wallet. This is most likely an internal error, please contact the support.'));
+                }
+            )
+    }, () => {
+        throw next(new RequestError(404, 'Internal Server Error', 'Could not find your Coinbase wallet. This is most likely an internal error, please contact the support.'));
+    }
+    ).catch((internalError) => {
+        throw next(internalError);
+    })
 };
 
 export const getCoinbaseTransactionsForAccount: RequestHandler = async (
@@ -44,7 +43,7 @@ export const getCoinbaseTransactionsForAccount: RequestHandler = async (
         return next(
             new RequestError(422, 'Invalid input', validationResult(req).array().map((error) => error.msg).join(". "), validationResult(req).array())
         );
-      }
+    }
     coinbaseGet(
         `https://api.coinbase.com/v2/accounts/${req.params.accountId}/transactions`,
         req.user
@@ -76,7 +75,7 @@ export const getCoinbasePortfolioPerformance: RequestHandler = async (req, res, 
         return next(
             new RequestError(422, 'Invalid input', validationResult(req).array().map((error) => error.msg).join(". "), validationResult(req).array())
         );
-      }
+    }
     coinbaseGet(
         "https://www.coinbase.com/api/v3/coinbase.public_api.authed.portfolio_performance.PerformanceCalculator/Calculate?q=eyJkaXNwbGF5Q3VycmVuY3kiOiJFVVIiLCJwZXJpb2QiOiJVTktOT1dOIn0%3D"
         , req.user

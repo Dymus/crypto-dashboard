@@ -4,7 +4,6 @@ import { geminiGet } from "../request-helpers/gemini-request-helper";
 import { RequestError } from "../types/RequestError";
 import { validationResult } from "express-validator";
 import moment from "moment";
-import cryptoJs from "crypto-js";
 
 export const getGeminiAvailableBalances: RequestHandler = (req, res, next) => {
   return Promise.all([
