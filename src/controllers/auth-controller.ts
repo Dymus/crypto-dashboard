@@ -116,6 +116,7 @@ export const postLogin: RequestHandler = async (req, res, next) => {
                     userId: user._id,
                     email: user.email,
                     isCoinbaseApproved: user.coinbaseTokens ? true : false,
+                    isGeminiApproved: user.geminiKeys ? true : false,
                   },
                   fs.readFileSync(
                     path.join(__dirname, '..', '..', 'keys', 'private.pem')
@@ -150,6 +151,7 @@ export const postLogin: RequestHandler = async (req, res, next) => {
                     userId: user._id,
                     email: user.email,
                     isCoinbaseApproved: user.coinbaseTokens ? true : false,
+                    isGeminiApproved: user.geminiKeys ? true : false,
                   },
                   fs.readFileSync(
                     path.join(__dirname, '..', '..', 'keys', 'private.pem')
@@ -180,8 +182,12 @@ export const postLogin: RequestHandler = async (req, res, next) => {
 
 const userInfoUpToDate = (user: DocumentType<User>, decodedJWTToken: JWTTokenPayload) => {
   // TODO add more things that could often change in the JWT
-  if (decodedJWTToken.isCoinbaseApproved) {
-    return user.coinbaseTokens !== null
+  if (decodedJWTToken.isCoinbaseApproved && decodedJWTToken.isGeminiApproved) {
+    return user.coinbaseTokens !== null && user.geminiKeys !== null
+  } else if (!decodedJWTToken.isCoinbaseApproved && decodedJWTToken.isGeminiApproved) {
+    return user.coinbaseTokens === null && user.geminiKeys !== null
+  } if (decodedJWTToken.isCoinbaseApproved && !decodedJWTToken.isGeminiApproved) {
+    return user.coinbaseTokens !== null && user.geminiKeys === null
   } else {
     return user.coinbaseTokens === null
   }

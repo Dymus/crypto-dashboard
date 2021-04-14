@@ -8,8 +8,8 @@ import cryptoJs from "crypto-js";
 
 export const getGeminiAvailableBalances: RequestHandler = (req, res, next) => {
   return Promise.all([
-    geminiGet(req.user.geminiKeys.apiKey, cryptoJs.AES.decrypt(req.user.geminiKeys.apiSecret, req.user.password).toString(cryptoJs.enc.Utf8), 'balances', JSON.stringify({ nonce: Date.now(), request: "/v1/balances" })),
-    geminiGet(req.user.geminiKeys.apiKey, cryptoJs.AES.decrypt(req.user.geminiKeys.apiSecret, req.user.password).toString(cryptoJs.enc.Utf8), 'account', JSON.stringify({ nonce: Date.now(), request: "/v1/account" }))
+    geminiGet(req.user.geminiKeys.apiKey, req.geminiSecret, 'balances', JSON.stringify({ nonce: Date.now(), request: "/v1/balances" })),
+    geminiGet(req.user.geminiKeys.apiKey, req.geminiSecret, 'account', JSON.stringify({ nonce: Date.now(), request: "/v1/account" }))
   ]).then(async ([geminiBalancesResponse, geminiAccountResponse]) => {
     const dollarAccount = geminiBalancesResponse.data.find((account) => account.currency === "USD")
       const euroWallet = { balance: 0 }
@@ -33,8 +33,8 @@ export const getGeminiTradesForAccount: RequestHandler = async (req, res, next) 
 
   if (req.params.currencyCode.toLowerCase() === "eth" || req.params.currencyCode.toLowerCase() === "btc") {
     return Promise.all([
-      geminiGet(req.user.geminiKeys.apiKey, cryptoJs.AES.decrypt(req.user.geminiKeys.apiSecret, req.user.password).toString(cryptoJs.enc.Utf8), 'mytrades', JSON.stringify({ nonce: Date.now(), request: "/v1/mytrades", symbol: `${req.params.currencyCode.toLowerCase()}eur` })),
-      geminiGet(req.user.geminiKeys.apiKey, cryptoJs.AES.decrypt(req.user.geminiKeys.apiSecret, req.user.password).toString(cryptoJs.enc.Utf8), 'mytrades', JSON.stringify({ nonce: Date.now(), request: "/v1/mytrades", symbol: `${req.params.currencyCode.toLowerCase()}usd` }))
+      geminiGet(req.user.geminiKeys.apiKey, req.geminiSecret, 'mytrades', JSON.stringify({ nonce: Date.now(), request: "/v1/mytrades", symbol: `${req.params.currencyCode.toLowerCase()}eur` })),
+      geminiGet(req.user.geminiKeys.apiKey, req.geminiSecret, 'mytrades', JSON.stringify({ nonce: Date.now(), request: "/v1/mytrades", symbol: `${req.params.currencyCode.toLowerCase()}usd` }))
     ]).then(async ([geminiEurResponse, geminiUsdResponse]) => {
       const orderDates = [];
       const exchangeRates = {};

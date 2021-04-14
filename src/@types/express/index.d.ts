@@ -6,7 +6,8 @@ export { };
 declare global {
   namespace Express {
     interface Request {
-      user: DocumentType<User>
+      user: DocumentType<User>,
+      geminiSecret: string
     }
   }
 }

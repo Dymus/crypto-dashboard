@@ -14,6 +14,7 @@ export const refreshJWT = async (JWTRefreshToken: string) => {
           userId: user._id.toString(),
           email: user.email,
           isCoinbaseApproved: user.coinbaseTokens ? true : false,
+          isGeminiApproved: user.geminiKeys ? true : false,
         },
         fs.readFileSync(
           path.join(__dirname, '..', '..', 'keys', 'private.pem')
