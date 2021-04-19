@@ -3,7 +3,7 @@ import { saveCoinbaseTokens } from "../database/userDB";
 import cryptoJs from 'crypto-js';
 
 export const coinbaseGet = (url: string, user: any) => {
-  return axios.get(url, { headers: { "Authorization": `Bearer ${user.coinbaseTokens.access_token}`, "Accept-Language": "en", "Content-Type" : "application/json" } })
+  return axios.get(url, { headers: { "Authorization": `Bearer ${user.coinbaseTokens.access_token}`, "Accept-Language": "en", "Content-Type": "application/json" } })
     .then(
       (response) => { return Promise.resolve(response) },
       (error) => {
@@ -17,12 +17,14 @@ export const coinbaseGet = (url: string, user: any) => {
                     return axios.request(error.config);
                   }
                 })
+            }).catch((refreshError) => {
+              return Promise.reject(refreshError)
             })
         } else {
           return Promise.reject(error);
-        } 
+        }
       }
-  ).catch((error) => {
-    return Promise.reject(error)
-  })
+    ).catch((error) => {
+      return Promise.reject(error)
+    })
 }
