@@ -16,6 +16,13 @@ export class GeminiKeys {
     public apiSecret: string;
 }
 
+// export class CoinAlerts {
+//     @prop()
+//     public alerts: {
+        
+//     };
+// }
+
 export class User {
     @prop({ required: true })
     public email: string;
@@ -28,6 +35,9 @@ export class User {
 
     @prop({ _id: false, default: null})
     geminiKeys?: GeminiKeys;
+
+    @prop({ _id: false, default: null})
+    alerts?: {};
 }
 
 export const UserModel = getModelForClass(User);
