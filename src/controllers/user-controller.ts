@@ -1,10 +1,14 @@
 import { RequestHandler } from 'express';
-import { User, UserModel } from '../models/user-model';
-import { DocumentType } from "@typegoose/typegoose";
+import { UserModel } from '../models/user-model';
 import { RequestError } from '../types/RequestError';
+import { refreshJWT } from '../jwt-helpers/refresh-jwt-helper';
 
-export const getUserAuthStatus: RequestHandler = (req, res, _) => {
-  return res.status(200).json({isCoinbaseApproved: req.user.coinbaseTokens ? true : false, isGeminiApproved: req.user.geminiKeys ? true : false})
+export const refreshUserAuthStatus: RequestHandler = (req, res, next) => {
+  return refreshJWT(req.cookies.refreshToken).then((newJWTToken) => {
+    return res.status(200).json({ JWTToken: newJWTToken })
+  }).catch(() => {
+    return next(new RequestError(400, 'Could not refresh user authentication status', 'Unknown error while updating user token'));
+  })
 };
 
 export const getUserAlerts: RequestHandler = (req, res, _) => {
@@ -16,7 +20,7 @@ export const setUserAlerts: RequestHandler = (req, res, next) => {
   const update = {alerts: req.body};
 
   UserModel.findOneAndUpdate(filter, update, {new: true})
-  .then(user => {
+    .then((user) => {
     if (JSON.stringify(user.alerts) === JSON.stringify(req.body)) {
       return res.status(200).json({wasSuccess: true})
     } else {

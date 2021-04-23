@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { postSaveCoinbaseToken } from "../controllers/coinbase-auth-controller";
+import { postSaveCoinbaseToken, deleteCoinbaseAccess } from "../controllers/coinbase-auth-controller";
 import { isAuth } from "../controllers/auth-controller"
 import { body } from "express-validator";
 
@@ -15,5 +15,7 @@ router.post("/save-token", [
     }
   })
 ], postSaveCoinbaseToken);
+
+router.delete("/deleteCoinbase", [isAuth], deleteCoinbaseAccess)
 
 export default router;
