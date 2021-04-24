@@ -7,10 +7,8 @@ import { User } from "../models/user-model";
 import { RequestError } from "../types/RequestError";
 
 export const setGeminiApiAndSecret: RequestHandler = async (req, res, next) => {
-  let user : DocumentType<User>;
     setGeminiApiKeys(req.user._id, req.body.apiKey, req.body.apiSecret)
       .then((savedUser) => {
-        user = savedUser
         return refreshJWT(req.cookies.refreshToken)
       },
         () => {
@@ -22,7 +20,9 @@ export const setGeminiApiAndSecret: RequestHandler = async (req, res, next) => {
           )
         }
       ).then(
-        (newJWTToken) => res.status(201).json({ message: 'Gemini tokens saved successfully', user, JWTToken: newJWTToken }),
+        (newJWTToken) => {
+          return res.status(201).json({ message: 'Gemini tokens saved successfully', JWTToken: newJWTToken })
+        },
         () => {
           throw next(
             new RequestError(
@@ -37,4 +37,21 @@ export const setGeminiApiAndSecret: RequestHandler = async (req, res, next) => {
 export const addGeminiSecretToRequest: RequestHandler = async (req, _, next) => {
   req.geminiSecret = cryptoJs.AES.decrypt(req.user.geminiKeys.apiSecret, req.user.password).toString(cryptoJs.enc.Utf8);
   next();
+}
+
+export const deleteGeminiAccess: RequestHandler = async (req, res, next) => {
+  req.user.geminiKeys = null;
+  req.user.save().then((savedUser) => {
+    return refreshJWT(req.cookies.refreshToken)
+  }).then((newJWTToken) =>
+    res.status(201).json({ message: 'Gemini tokens deleted successfully', JWTToken: newJWTToken }
+    )).catch((error) => {
+      console.log(error)
+      throw next(
+        new RequestError(
+          400,
+          "Unexpected Error", `The server encountered an issue when trying to delete your Gemini API keys`
+        )
+      )
+    })
 }
