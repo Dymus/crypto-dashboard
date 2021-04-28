@@ -38,7 +38,7 @@ export const isAuth: RequestHandler = (req, _, next) => {
       fs.readFileSync(path.join(__dirname, '..', '..', 'keys', 'public.pem')),
       async (error, decodedJWTToken: JWTTokenPayload) => {
         if (!error) {
-          const loadedUser = await UserModel.findById(decodedJWTToken.userId).exec();
+          const loadedUser = await UserModel.findById(decodedJWTToken.userId, {notifications:0}).exec();
           if (userInfoUpToDate(loadedUser, decodedJWTToken)) {
             req.user = loadedUser;
             next();

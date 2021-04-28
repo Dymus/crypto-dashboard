@@ -24,3 +24,25 @@ export const setUserAlerts: RequestHandler = (req, res, next) => {
     }
   })
 }
+
+export const getUserAlertNotifications: RequestHandler = (req, res, _) => {
+  UserModel.findById(req.user._id).then(user => {
+    return res.status(200).json({alertNotifications: user.notifications})
+  })
+}
+
+export const markAllUserAlertNotificationsAsViewed: RequestHandler = (req, res, _) => {
+  const filter = {_id: req.user._id};
+  const update = {notifications: req.body};
+  UserModel.findByIdAndUpdate(filter, update).then(() => {
+    return res.status(200);
+  })
+}
+
+export const removeAllAlertNotifications: RequestHandler = (req, res, _) => {
+  const filter = {_id: req.user._id};
+  const update = {notifications: req.body};
+  UserModel.findByIdAndUpdate(filter, update).then(() => {
+    return res.status(200);
+  })
+}

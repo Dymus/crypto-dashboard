@@ -30,6 +30,9 @@ export class User {
     @prop({ required: true })
     public password: string;
 
+    @prop({ _id: false, default: [] as AlertNotification[] })
+    notifications?: AlertNotification[]
+
     @prop({ _id: false, default: null })
     coinbaseTokens?: CoinbaseAccessToken;
 
