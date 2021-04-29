@@ -1,4 +1,4 @@
-import { getModelForClass, prop } from "@typegoose/typegoose";
+import { getModelForClass, ModelOptions, prop, Severity } from "@typegoose/typegoose";
 
 export class CoinbaseAccessToken {
     @prop()
@@ -19,10 +19,11 @@ export class GeminiKeys {
 // export class CoinAlerts {
 //     @prop()
 //     public alerts: {
-        
+
 //     };
 // }
 
+@ModelOptions({options: {allowMixed: Severity.ALLOW }})
 export class User {
     @prop({ required: true })
     public email: string;
@@ -36,10 +37,10 @@ export class User {
     @prop({ _id: false, default: null })
     coinbaseTokens?: CoinbaseAccessToken;
 
-    @prop({ _id: false, default: null})
+    @prop({ _id: false, default: null })
     geminiKeys?: GeminiKeys;
 
-    @prop({ _id: false, default: null})
+    @prop({ _id: false, default: {} })
     alerts?: {};
 }
 

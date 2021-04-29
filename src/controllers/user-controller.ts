@@ -1,48 +1,58 @@
 import { RequestHandler } from 'express';
-import { User, UserModel } from '../models/user-model';
-import { DocumentType } from "@typegoose/typegoose";
+import { getUserAlertNotificationsFromUserDB, markAllUserAlertNotificationsAsViewedInUserDB, removeAllAlertNotificationsFromUserDB, setUserAlertsInUserDB } from '../database/userDB';
 import { RequestError } from '../types/RequestError';
 
 export const getUserAuthStatus: RequestHandler = (req, res, _) => {
-  return res.status(200).json({isCoinbaseApproved: req.user.coinbaseTokens ? true : false, isGeminiApproved: req.user.geminiKeys ? true : false})
+  return res.status(200).json({ isCoinbaseApproved: req.user.coinbaseTokens ? true : false, isGeminiApproved: req.user.geminiKeys ? true : false })
 };
 
 export const getUserAlerts: RequestHandler = (req, res, _) => {
-  return res.status(200).json({alerts: req.user.alerts});
+  return res.status(200).json({ alerts: req.user.alerts })
 }
 
 export const setUserAlerts: RequestHandler = (req, res, next) => {
-  const filter = {_id: req.user._id};
-  const update = {alerts: req.body};
+  setUserAlertsInUserDB(req.user._id, req.body)
+    .then(
+      (updatedUser) => {
+        return res.status(200).json({ alerts: updatedUser.alerts })
+      },
+      () => {
+        next(new RequestError(400, 'Could not update alerts', 'Unknown error while updating user alerts'));
+      }
+  )
+}
 
-  UserModel.findOneAndUpdate(filter, update, {new: true})
-  .then(user => {
-    if (JSON.stringify(user.alerts) === JSON.stringify(req.body)) {
-      return res.status(200).json({wasSuccess: true})
-    } else {
-      next(new RequestError(400, 'Could not update alerts', 'Unknown error while updating user alerts'));
+export const getUserAlertNotifications: RequestHandler = (req, res, next) => {
+  getUserAlertNotificationsFromUserDB(req.user._id)
+    .then(
+      (alertNotifications) => {
+        return res.status(200).json({ alertNotifications })
+      },
+      () => {
+        next(new RequestError(404, 'Could not find notifications', 'Could not find notifications for the given user'));
+      }
+    )
+}
+
+export const markAllUserAlertNotificationsAsViewed: RequestHandler = (req, res, next) => {
+  markAllUserAlertNotificationsAsViewedInUserDB(req.user._id)
+    .then(
+      (updatedUser) => {
+        return res.status(200).json({ alertNotifications: updatedUser.notifications });
+      },
+      () => {
+        next(new RequestError(400, 'Error while updating notifications', 'Could not mark your notifications as viewed'));
+      }
+    )
+}
+
+export const removeAllAlertNotifications: RequestHandler = (req, res, next) => {
+  removeAllAlertNotificationsFromUserDB(req.user._id).then(
+    () => {
+      return res.status(200).send();
+    },
+    () => {
+      next(new RequestError(400, 'Error while deleting notifications', 'Could not delete your notifications'));
     }
-  })
-}
-
-export const getUserAlertNotifications: RequestHandler = (req, res, _) => {
-  UserModel.findById(req.user._id).then(user => {
-    return res.status(200).json({alertNotifications: user.notifications})
-  })
-}
-
-export const markAllUserAlertNotificationsAsViewed: RequestHandler = (req, res, _) => {
-  const filter = {_id: req.user._id};
-  const update = {notifications: req.body};
-  UserModel.findByIdAndUpdate(filter, update).then(() => {
-    return res.status(200);
-  })
-}
-
-export const removeAllAlertNotifications: RequestHandler = (req, res, _) => {
-  const filter = {_id: req.user._id};
-  const update = {notifications: req.body};
-  UserModel.findByIdAndUpdate(filter, update).then(() => {
-    return res.status(200);
-  })
+  )
 }
