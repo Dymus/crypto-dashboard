@@ -141,7 +141,7 @@ const setUserDailyNotifications = (user: DocumentType<User>, coingeckoData) => {
   const newNotifications = [] as AlertNotification[]
   for (const coingeckoName in user.alerts) {
     const coinData = coingeckoData.find((coin) => coin.id === coingeckoName)
-    if (Math.abs(coinData.price_change_percentage_24h_in_currency) >= user.alerts[coingeckoName].hourPriceChange && user.alerts[coingeckoName].hourPriceChange !== 0) {
+    if (Math.abs(coinData.price_change_percentage_24h_in_currency) >= user.alerts[coingeckoName].dayPriceChange && user.alerts[coingeckoName].dayPriceChange !== 0) {
       newNotifications.push(
         {
           id: uuid4(),
@@ -178,7 +178,7 @@ const setUserWeeklyNotifications = (user: DocumentType<User>, coingeckoData) => 
   const newNotifications = [] as AlertNotification[]
   for (const coingeckoName in user.alerts) {
     const coinData = coingeckoData.find((coin) => coin.id === coingeckoName)
-    if (Math.abs(coinData.price_change_percentage_7d_in_currency) >= user.alerts[coingeckoName].hourPriceChange && user.alerts[coingeckoName].hourPriceChange !== 0) {
+    if (Math.abs(coinData.price_change_percentage_7d_in_currency) >= user.alerts[coingeckoName].weekPriceChange && user.alerts[coingeckoName].weekPriceChange !== 0) {
       newNotifications.push(
         {
           id: uuid4(),
