@@ -72,12 +72,14 @@ export const getUserAlertNotificationsFromUserDB = async (userId: string) => {
 }
 
 export const markAllUserAlertNotificationsAsViewedInUserDB = async (userId: string) => {
-  return UserModel.findById(userId).select('notifications')
-    .then((userWithNotifications) => {
-      userWithNotifications.notifications.forEach((notification) => {
+  return UserModel.findById(userId)
+    .then((foundUser) => {
+      foundUser.notifications.forEach((notification) => {
         notification.wasViewed = true;
       })
-      return userWithNotifications.save()
+      const filter = {_id: userId};
+      const update = {notifications: foundUser.notifications}
+      return UserModel.findByIdAndUpdate(filter, update, {new: true})
     })
     .then((updatedUser) => {
       return Promise.resolve(updatedUser)
