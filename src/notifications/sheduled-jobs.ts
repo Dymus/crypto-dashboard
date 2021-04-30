@@ -108,6 +108,7 @@ const setUserHourlyNotifications = (user: DocumentType<User>, coingeckoData) => 
       newNotifications.push(
         {
           id: uuid4(),
+          token: coingeckoName,
           createdAt: Date.now(),
           iconUrl: coinData.image,
           title: coinData.price_change_percentage_1h_in_currency > 0 ? `${coinData.name} is going up` : `${coinData.name} is going down`,
@@ -144,6 +145,7 @@ const setUserDailyNotifications = (user: DocumentType<User>, coingeckoData) => {
       newNotifications.push(
         {
           id: uuid4(),
+          token: coingeckoName,
           createdAt: Date.now(),
           iconUrl: coinData.image,
           title: coinData.price_change_percentage_24h_in_currency > 0 ? `${coinData.name} is going up` : `${coinData.name} is going down`,
@@ -180,6 +182,7 @@ const setUserWeeklyNotifications = (user: DocumentType<User>, coingeckoData) => 
       newNotifications.push(
         {
           id: uuid4(),
+          token: coingeckoName,
           createdAt: Date.now(),
           iconUrl: coinData.image,
           title: coinData.price_change_percentage_7d_in_currency > 0 ? `${coinData.name} is going up` : `${coinData.name} is going down`,

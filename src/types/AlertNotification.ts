@@ -1,5 +1,6 @@
 type AlertNotification = {
   id: string;
+  token: string;
   createdAt: number;
   title: string;
   message: string;
