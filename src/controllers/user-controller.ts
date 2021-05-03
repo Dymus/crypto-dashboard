@@ -1,9 +1,14 @@
 import { RequestHandler } from 'express';
 import { getUserAlertNotificationsFromUserDB, markAllUserAlertNotificationsAsViewedInUserDB, removeAllAlertNotificationsFromUserDB, setUserAlertsInUserDB } from '../database/userDB';
+import { refreshJWT } from '../jwt-helpers/refresh-jwt-helper';
 import { RequestError } from '../types/RequestError';
 
-export const getUserAuthStatus: RequestHandler = (req, res, _) => {
-  return res.status(200).json({ isCoinbaseApproved: req.user.coinbaseTokens ? true : false, isGeminiApproved: req.user.geminiKeys ? true : false })
+export const refreshUserAuthStatus: RequestHandler = (req, res, next) => {
+  return refreshJWT(req.cookies.refreshToken).then((newJWTToken) => {
+    return res.status(200).json({ JWTToken: newJWTToken })
+  }).catch(() => {
+    return next(new RequestError(400, 'Could not refresh user authentication status', 'Unknown error while updating user token'));
+  })
 };
 
 export const getUserAlerts: RequestHandler = (req, res, _) => {

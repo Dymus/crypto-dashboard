@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getUserAlertNotifications, getUserAlerts, getUserAuthStatus, markAllUserAlertNotificationsAsViewed, setUserAlerts, removeAllAlertNotifications } from '../controllers/user-controller';
+import { getUserAlertNotifications, getUserAlerts, refreshUserAuthStatus, markAllUserAlertNotificationsAsViewed, setUserAlerts, removeAllAlertNotifications } from '../controllers/user-controller';
 import { isAuth } from "../controllers/auth-controller"
 
 const router = Router();
