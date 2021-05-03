@@ -25,6 +25,8 @@
     "@types/jsonwebtoken": "^8.5.0",
     "@types/mongoose": "^5.10.3",
     "@types/socket.io": "^2.1.13",
+    "@types/uuid": "^8.3.0",
+    "@types/ws": "^7.4.1",
     "crypto-js": "^4.0.0",
     "ts-lint": "^4.5.1",
     "ts-node-dev": "^1.1.6",
@@ -42,6 +44,9 @@
     "express-validator": "^6.10.0",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.1",
-    "mongoose": "^5.10.18"
+    "mongoose": "^5.10.18",
+    "toad-scheduler": "^1.0.2",
+    "uuid": "^8.3.2",
+    "ws": "^7.4.5"
   }
 }

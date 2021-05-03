@@ -7,8 +7,8 @@ import { json } from 'body-parser';
 import { config } from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
 import { createServer } from 'http';
+import cookieParser from "cookie-parser"
 
-// import binanceAuthRoutes from "./routes/binance-auth";
 import userRoutes from "./routes/user";
 import authRoutes from "./routes/auth";
 import coinbaseAuthRoutes from "./routes/coinbase-auth";
@@ -17,7 +17,7 @@ import redditApiRoutes from "./routes/reddit-api";
 import geminiApiRoutes from "./routes/gemini-api";
 import geminiAuthRoutes from "./routes/gemini-auth"
 import { RequestError } from "./types/RequestError";
-import cookieParser from "cookie-parser"
+import { createAndScheduleNotifier } from './notifications/sheduled-jobs';
 
 const myEnv = config();
 dotenvExpand(myEnv);
@@ -49,7 +49,6 @@ connect(process.env.MONGO_URI, {
 
     app.use(authRoutes);
     app.use("/user", userRoutes);
-    // app.use("/binance", binanceAuthRoutes);
     app.use("/coinbase", coinbaseAuthRoutes);
     app.use("/coinbase-api", coinbaseApiRoutes);
     app.use("/reddit-api", redditApiRoutes);
@@ -57,21 +56,22 @@ connect(process.env.MONGO_URI, {
     app.use('/gemini', geminiAuthRoutes);
 
     app.use((err: Error, _: Request, res: Response, _2: NextFunction) => {
-        if (err instanceof RequestError) {
-            return res.status((err as RequestError).status).json({
-                title: (err as RequestError).title,
-                errorMessage: (err as RequestError).message,
-                errors: (err as RequestError).errors,
-            });
-        } else {
-            return res.status(500).json({ title: "Unexpected Server Error", errorMessage: err.message });
-        }
+      if (err instanceof RequestError) {
+        return res.status((err as RequestError).status).json({
+          title: (err as RequestError).title,
+          errorMessage: (err as RequestError).message,
+          errors: (err as RequestError).errors,
+        });
+      } else {
+        return res.status(500).json({ title: "Unexpected Server Error", errorMessage: err.message });
+      }
     });
 
     const server = createServer(app);
 
     server.listen(3000, () => {
       console.log('listening on port 3000');
+      createAndScheduleNotifier(server)
       // runScript();
     });
   })
