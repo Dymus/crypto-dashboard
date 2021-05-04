@@ -4,7 +4,7 @@ export class News {
   @prop({ required: true })
   public cryptocurrency: string;
 
-  @prop({ required: true })
+  @prop({ required: false })
   public scraped_at: Date;
 
   @prop({ required: true })
