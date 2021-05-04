@@ -22,7 +22,7 @@ client = MongoClient(
 our_database = client["CryptoDashboard"]
 trends = our_database["trends"]
 hots = our_database['hots']
-cryptocurrencies = ["Bitcoin", "Ethereum", "Cardano"]
+cryptocurrencies = []
 
 # Specifying subreddits to scrape
 subreddits = [
@@ -30,17 +30,16 @@ subreddits = [
     "CryptoCurrencies",
     "CryptoCurrencyTrading",
 ]  # make a list of subreddits you want to scrape the data from
-"""
+
 response = requests.get('https://api.coingecko.com/api/v3/coins/markets?vs_currency=eur&order=market_cap_desc&per_page=200&page=1&sparkline=false').text
 response_info = json.loads(response)
  
 for coin in response_info:
     cryptocurrencies.append(coin['name'])
-"""
+
 while True:
-    '''
     for cryptocurrency in cryptocurrencies:
-        for sub in subreddits:
+        print(cryptocurrency)
         count = 0
 
         for sub in subreddits:
@@ -58,8 +57,8 @@ while True:
         trends.insert_one(
             {"cryptocurrency": cryptocurrency, "scraped_at": now, "count": count}
         )
-    '''
 
+    '''
     urls = []
     titles = []
     scores = []
@@ -71,8 +70,13 @@ while True:
         scores.append(submission.score)
         dates.append(submission.created_utc)
     for i in range(len(urls)):
-        soup = BeautifulSoup(requests.get(urls[i]).content,'html.parser')
-        image = soup.find('meta', property='og:image')
-        image_url = image['content'] if image else 'https://www.mcleodgaming.com/wp-content/uploads/2019/05/reddit_logo-150x150.png'
+        r = requests.get(urls[sub][i])
+        if r:
+            soup = BeautifulSoup(requests.get(urls[i]).content,'html.parser')
+            image = soup.find('meta', property='og:image')
+            image_url = image['content'] if image else 'https://www.mcleodgaming.com/wp-content/uploads/2019/05/reddit_logo-150x150.png'
+        else:
+            image_url = 'https://www.mcleodgaming.com/wp-content/uploads/2019/05/reddit_logo-150x150.png'
         hots.insert_one({'title': titles[i], 'score': scores[i], 'url': urls[i], 'image' : image_url})
+    '''
     time.sleep(900)
