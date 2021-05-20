@@ -104,7 +104,7 @@ export const getGeminiTradesForAccount: RequestHandler = async (req, res, next) 
       });
   }
   else {
-    return geminiGet('account-v0HhqXlhJ4ZUUvTvo5C1', '3DKAJxk2kPpgv12GGndDZBBdtqM1', 'mytrades', JSON.stringify({ nonce: Date.now(), request: "/v1/mytrades", symbol: `${req.params.currencyCode.toLowerCase()}usd` }))
+    return geminiGet(req.user.geminiKeys.apiKey, req.geminiSecret, 'mytrades', JSON.stringify({ nonce: Date.now(), request: "/v1/mytrades", symbol: `${req.params.currencyCode.toLowerCase()}usd` }))
       .then(async (geminiUsdResponse) => {
         const orderDates = [];
         const exchangeRates = {};
