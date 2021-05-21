@@ -13,7 +13,7 @@ export const getGeminiAvailableBalances: RequestHandler = (req, res, next) => {
     const dollarAccount = geminiBalancesResponse.data.find((account) => account.currency === "USD")
       const euroWallet = { balance: 0 }
       if (dollarAccount) {
-        await axios.get("https://api.ratesapi.io/api/latest?base=USD&symbols=EUR").then((response) => {
+        await axios.get("https://api.exchangerate.host/latest?base=USD&symbols=EUR").then((response) => {
           euroWallet.balance = dollarAccount.amount * response.data.rates.EUR
         })
       }
@@ -41,7 +41,7 @@ export const getGeminiTradesForAccount: RequestHandler = async (req, res, next) 
         const date = moment.unix(trade.timestamp).format('YYYY-MM-DD');
         if (!orderDates.some((order) => order.date === date)) {
           orderDates.push({ orderId: trade.order_id, date });
-          exchangeRates[trade.order_id] = axios.get(`https://api.ratesapi.io/api/${date}?base=USD&symbols=EUR`);
+          exchangeRates[trade.order_id] = axios.get(`https://api.exchangerate.host/${date}?base=USD&symbols=EUR`);
         } else {
           exchangeRates[trade.order_id] = exchangeRates[orderDates.find((orderDate) => orderDate.date === date).orderId]
         }
@@ -112,7 +112,7 @@ export const getGeminiTradesForAccount: RequestHandler = async (req, res, next) 
           const date = moment.unix(trade.timestamp).format('YYYY-MM-DD');
           if (!orderDates.some((order) => order.date === date)) {
             orderDates.push({ orderId: trade.order_id, date });
-            exchangeRates[trade.order_id] = axios.get(`https://api.ratesapi.io/api/${date}?base=USD&symbols=EUR`);
+            exchangeRates[trade.order_id] = axios.get(`https://api.exchangerate.host/${date}?base=USD&symbols=EUR`);
           } else {
             exchangeRates[trade.order_id] = exchangeRates[orderDates.find((orderDate) => orderDate.date === date).orderId]
           }
