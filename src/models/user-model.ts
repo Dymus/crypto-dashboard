@@ -1,25 +1,47 @@
-import { getModelForClass, prop } from "@typegoose/typegoose";
+import { getModelForClass, ModelOptions, prop, Severity } from "@typegoose/typegoose";
 
-class AccessToken {
-  @prop()
-  public access_token: string;
+export class CoinbaseAccessToken {
+    @prop()
+    public access_token: string;
 
-  @prop()
-  public token_type: string;
-
-  @prop()
-  public expires_in: number;
-
-  @prop()
-  public refresh_token: string;
-
-  @prop()
-  public scope: string
+    @prop()
+    public refresh_token: string;
 }
 
-class User {
-  @prop()
-  public token?: AccessToken
+export class GeminiKeys {
+    @prop()
+    public apiKey: string;
+
+    @prop()
+    public apiSecret: string;
+}
+
+// export class CoinAlerts {
+//     @prop()
+//     public alerts: {
+
+//     };
+// }
+
+@ModelOptions({options: {allowMixed: Severity.ALLOW }})
+export class User {
+    @prop({ required: true })
+    public email: string;
+
+    @prop({ required: true })
+    public password: string;
+
+    @prop({ _id: false, default: [] as AlertNotification[] })
+    notifications?: AlertNotification[]
+
+    @prop({ _id: false, default: null })
+    coinbaseTokens?: CoinbaseAccessToken;
+
+    @prop({ _id: false, default: null })
+    geminiKeys?: GeminiKeys;
+
+    @prop({ _id: false, default: {} })
+    alerts?: {};
 }
 
 export const UserModel = getModelForClass(User);
