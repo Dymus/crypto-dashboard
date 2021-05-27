@@ -1,4 +1,5 @@
 import { RequestHandler } from 'express';
+
 import { getUserAlertNotificationsFromUserDB, markAllUserAlertNotificationsAsViewedInUserDB, removeAllAlertNotificationsFromUserDB, setUserAlertsInUserDB } from '../database/userDB';
 import { refreshJWT } from '../jwt-helpers/refresh-jwt-helper';
 import { RequestError } from '../types/RequestError';

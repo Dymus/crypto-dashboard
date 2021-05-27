@@ -1,11 +1,12 @@
-import { Router } from "express";
-import { isAuth } from "../controllers/auth-controller";
-import { setGeminiApiAndSecret, deleteGeminiAccess } from "../controllers/gemini-auth-controller";
+import { Router } from 'express';
+
+import { isAuth } from '../middleware/auth';
+import * as ApiGeminiAuthController from '../api-controllers/api-gemini-auth-controller';
 
 const router = Router();
 
-router.post("/saveGemini", [isAuth], setGeminiApiAndSecret);
+router.post('/saveGemini', isAuth, ApiGeminiAuthController.setGeminiApiAndSecret);
 
-router.delete("/deleteGemini", [isAuth], deleteGeminiAccess)
+router.delete('/deleteGemini', isAuth, ApiGeminiAuthController.deleteGeminiAccess);
 
 export default router;

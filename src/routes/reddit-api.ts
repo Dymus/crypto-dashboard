@@ -1,14 +1,13 @@
 import { Router } from 'express';
-import {
-  getTrendsForCryptocurrency,
-  getNewsForCryptocurrency,
-  getHotTrends
-} from '../controllers/reddit-api-controller';
+
+import * as ApiRedditController from '../api-controllers/api-reddit-controller';
 
 const router = Router();
 
-router.get('/trends', getTrendsForCryptocurrency);
-router.get('/news/:cryptocurrencyName', getNewsForCryptocurrency);
-router.get('/hots', getHotTrends);
+router.get('/trends', ApiRedditController.getTrendsForCryptocurrency);
+
+router.get('/news/:cryptocurrencyName', ApiRedditController.getNewsForCryptocurrency);
+
+router.get('/hots', ApiRedditController.getHotTrends);
 
 export default router;

@@ -1,14 +1,12 @@
-import { DocumentType } from "@typegoose/typegoose";
-import cryptoJs from "crypto-js";
 import { RequestHandler } from "express";
+
 import { setGeminiApiKeys } from "../database/userDB";
 import { refreshJWT } from "../jwt-helpers/refresh-jwt-helper";
-import { User } from "../models/user-model";
 import { RequestError } from "../types/RequestError";
 
 export const setGeminiApiAndSecret: RequestHandler = async (req, res, next) => {
     setGeminiApiKeys(req.user._id, req.body.apiKey, req.body.apiSecret)
-      .then((savedUser) => {
+      .then(() => {
         return refreshJWT(req.cookies.refreshToken)
       },
         () => {
@@ -34,14 +32,9 @@ export const setGeminiApiAndSecret: RequestHandler = async (req, res, next) => {
       );
 }
 
-export const addGeminiSecretToRequest: RequestHandler = async (req, _, next) => {
-  req.geminiSecret = cryptoJs.AES.decrypt(req.user.geminiKeys.apiSecret, req.user.password).toString(cryptoJs.enc.Utf8);
-  next();
-}
-
 export const deleteGeminiAccess: RequestHandler = async (req, res, next) => {
   req.user.geminiKeys = null;
-  req.user.save().then((savedUser) => {
+  req.user.save().then(() => {
     return refreshJWT(req.cookies.refreshToken)
   }).then((newJWTToken) =>
     res.status(201).json({ message: 'Gemini tokens deleted successfully', JWTToken: newJWTToken }
