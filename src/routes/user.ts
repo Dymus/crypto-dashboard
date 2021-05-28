@@ -1,20 +1,21 @@
 import { Router } from 'express';
 
 import { isAuth } from '../middleware/auth';
+import * as Validator from '../middleware/validation'
 import * as ApiUserController from '../api-controllers/api-user-controller';
 
 const router = Router();
 
-router.post('/refreshAuth', isAuth, ApiUserController.refreshUserAuthStatus);
+router.get('/refresh-auth-status', isAuth, ApiUserController.refreshUserAuthStatus);
 
-router.get('/getAlerts', isAuth, ApiUserController.getUserAlerts);
+router.get('/get-alerts', isAuth, ApiUserController.getUserAlerts);
 
-router.put('/setUserAlerts', isAuth, ApiUserController.setUserAlerts);
+router.put('/set-user-alerts', [isAuth, Validator.validateSetUserAlerts], ApiUserController.setUserAlerts);
 
-router.get('/getUserAlertNotifications', isAuth, ApiUserController.getUserAlertNotifications);
+router.get('/get-user-alert-notifications', isAuth, ApiUserController.getUserAlertNotifications);
 
-router.put('/markAllUserAlertNotificationsAsViewed', isAuth, ApiUserController.markAllUserAlertNotificationsAsViewed);
+router.put('/mark-all-user-alert-notifications-as-viewed', isAuth, ApiUserController.markAllUserAlertNotificationsAsViewed);
 
-router.delete('/removeAllAlertNotifications', isAuth, ApiUserController.removeAllAlertNotifications);
+router.delete('/remove-all-alert-notifications', isAuth, ApiUserController.removeAllAlertNotifications);
 
 export default router;

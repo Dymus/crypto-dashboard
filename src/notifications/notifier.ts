@@ -2,6 +2,7 @@ import url from 'url'
 import { Server } from 'ws'
 import { Server as HttpServer } from "http";
 
+// untested
 export class Notifier {
   private connections: Map<string, any>;
   private server: Server;

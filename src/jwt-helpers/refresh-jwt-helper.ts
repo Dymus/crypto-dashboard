@@ -4,6 +4,7 @@ import path from 'path';
 import { JWTTokenPayload } from '../types/JWTTokenPayload';
 import { getUserTokenDataById } from '../database/userDB';
 
+// tested in the refresh-jwt-helper test suite
 export const refreshJWT = async (JWTRefreshToken: string) => {
   const decodedJWTToken = verify(
     JWTRefreshToken,

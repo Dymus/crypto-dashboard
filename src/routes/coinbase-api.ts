@@ -15,6 +15,12 @@ router.get(
   ApiCoinbaseController.getCoinbaseTransactionsForAccount
 );
 
+router.get(
+  '/account-transactions',
+  [Validator.validateGetCoinbaseTransactions, Validator.checkValidationResult, isAuth, isCoinbaseAuth],
+  ApiCoinbaseController.getCoinbaseTransactionsForAccount
+);
+
 router.get('/portfolio-performance', [isAuth, isCoinbaseAuth], ApiCoinbaseController.getCoinbasePortfolioPerformance);
 
 export default router;

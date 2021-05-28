@@ -8,11 +8,11 @@ import * as Validator from '../middleware/validation';
 const router = Router();
 
 router.post(
-  '/save-token',
+  '/save-coinbase-access',
   [isAuth, Validator.validateSaveCoinbaseToken, Validator.checkValidationResult],
   ApiCoinbaseAuthController.postSaveCoinbaseToken
 );
 
-router.delete('/deleteCoinbase', [isAuth, isCoinbaseAuth], ApiCoinbaseAuthController.deleteCoinbaseAccess);
+router.delete('/delete-coinbase-access', [isAuth, isCoinbaseAuth], ApiCoinbaseAuthController.deleteCoinbaseAccess);
 
 export default router;
