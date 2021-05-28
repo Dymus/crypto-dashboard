@@ -229,7 +229,8 @@ test("mark all user's alert notifications as viewed when provided correct user I
   });
 });
 
-afterAll(() => {
+afterAll(async () => {
+  await UserModel.findOneAndDelete({email: 'test2@test.test'})
   return UserModel.findByIdAndDelete(testUser._id).then(() => {
     mongoose.connection.close();
   });

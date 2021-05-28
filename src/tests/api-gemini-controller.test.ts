@@ -80,7 +80,7 @@ beforeEach(async () => {
  * test GET tp /gemini/balances
  */
 describe('GET /balances', () => {
-  test('responds with 201', async () => {
+  test('responds with 200', async () => {
     // act
     return request(server)
       .get('/balances')

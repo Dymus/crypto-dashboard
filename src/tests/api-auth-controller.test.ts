@@ -7,7 +7,7 @@ import { createServer, Server } from 'http';
 import express, { json } from 'express';
 import cookieParser from 'cookie-parser';
 
-import { UserModel } from '../models/user-model';
+import { User, UserModel } from '../models/user-model';
 import authRoutes from '../routes/auth';
 import { RequestError } from '../types/RequestError';
 import { extractCookies } from './test-helpers/cookie-helper';
@@ -60,6 +60,8 @@ beforeAll(async () => {
  */
 describe('POST /register', () => {
   test('responds with 201', async () => {
+    // arrange
+    await UserModel.deleteMany({email: 'test@test.test'})
     // act
     return request(server)
       .post('/register')

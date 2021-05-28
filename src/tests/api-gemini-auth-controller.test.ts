@@ -70,7 +70,7 @@ beforeEach(async () => {
   const loginReponse = await request(server).post('/login').send({ email: 'test@test.test', password: 'Abcd1234' });
   jwt = loginReponse.body.jwt;
   cookies = extractCookies(loginReponse.headers);
-})
+});
 
 /**
  * test POST to /gemini/save-gemini-access
@@ -101,14 +101,14 @@ describe('POST /save-gemini-access', () => {
         expect(response.statusCode).toBe(401);
       });
   });
-  
+
   test('responds with 422 because missing API secret', async () => {
     // act
     return request(server)
       .post('/save-gemini-access')
       .set('Authorization', `Bearer ${jwt}`)
       .set('Cookie', `refreshToken=${cookies.refreshToken}`)
-      .send({ apiKey: 'abcdEFGH'})
+      .send({ apiKey: 'abcdEFGH' })
       .then((response) => {
         // assert
         expect(response.statusCode).toBe(422);
@@ -131,7 +131,10 @@ describe('POST /save-gemini-access', () => {
     // act
     return request(server)
       .post('/save-gemini-access')
-      .set('Authorization', `Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1MDcyOTk5Zjc1N2QyMTYxNWM2OWFjMGMiLCJlbWFpbCI6InNAaC5zaCIsImlzQ29pbmJhc2VBcHByb3ZlZCI6ZmFsc2UsImlzR2VtaW5pQXBwcm92ZWQiOmZhbHNlLCJpYXQiOjE2MjIxOTI4ODYsImV4cCI6MjM0MjE5Mjg4Nn0.E_uWAjXIFtcIcIdgAnAM4fSkpeVlFxKMMtp9v10YTXVTzjXzGPkdbZpsgGi0wfWOZa7J0c9_d-mV6yCstF5gyPx2E_ftmBscBPY_2cHEN2KSAnGfhL5u24KhVQjMyOpdPoAsBEErWJbFjoyovl588mEiyOTHJTmSrnmnl8cu9jc`)
+      .set(
+        'Authorization',
+        `Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1MDcyOTk5Zjc1N2QyMTYxNWM2OWFjMGMiLCJlbWFpbCI6InNAaC5zaCIsImlzQ29pbmJhc2VBcHByb3ZlZCI6ZmFsc2UsImlzR2VtaW5pQXBwcm92ZWQiOmZhbHNlLCJpYXQiOjE2MjIxOTI4ODYsImV4cCI6MjM0MjE5Mjg4Nn0.E_uWAjXIFtcIcIdgAnAM4fSkpeVlFxKMMtp9v10YTXVTzjXzGPkdbZpsgGi0wfWOZa7J0c9_d-mV6yCstF5gyPx2E_ftmBscBPY_2cHEN2KSAnGfhL5u24KhVQjMyOpdPoAsBEErWJbFjoyovl588mEiyOTHJTmSrnmnl8cu9jc`
+      )
       .set('Cookie', `refreshToken=${cookies.refreshToken}`)
       .send({ apiKey: 'abcdEFGH', apiSecret: '12345678' })
       .then((response) => {
@@ -147,16 +150,16 @@ describe('POST /save-gemini-access', () => {
 describe('DELETE /delete-gemini-access', () => {
   test('responds with 200', async () => {
     // arrange
-    await request(server)
-    .post('/save-gemini-access')
-    .set('Authorization', `Bearer ${jwt}`)
-    .set('Cookie', `refreshToken=${cookies.refreshToken}`)
-    .send({ apiKey: 'abcdEFGH', apiSecret: '12345678' })
+    const newJWT = (await request(server)
+      .post('/save-gemini-access')
+      .set('Authorization', `Bearer ${jwt}`)
+      .set('Cookie', `refreshToken=${cookies.refreshToken}`)
+      .send({ apiKey: 'abcdEFGH', apiSecret: '12345678' })).body.JWTToken
 
     // act
     return request(server)
       .delete('/delete-gemini-access')
-      .set('Authorization', `Bearer ${jwt}`)
+      .set('Authorization', `Bearer ${newJWT}`)
       .set('Cookie', `refreshToken=${cookies.refreshToken}`)
       .then((response) => {
         // assert
@@ -165,10 +168,22 @@ describe('DELETE /delete-gemini-access', () => {
   });
 
   test('responds with 401 because not connected with Gemini', async () => {
+    //arrange
+    const firstJWT = (await request(server)
+      .post('/save-gemini-access')
+      .set('Authorization', `Bearer ${jwt}`)
+      .set('Cookie', `refreshToken=${cookies.refreshToken}`)
+      .send({ apiKey: 'abcdEFGH', apiSecret: '12345678' })).body.JWTToken
+
+    const secondJWT = (await request(server)
+      .delete('/delete-gemini-access')
+      .set('Authorization', `Bearer ${firstJWT}`)
+      .set('Cookie', `refreshToken=${cookies.refreshToken}`)).body.JWTToken
+
     // act
     return request(server)
       .delete('/delete-gemini-access')
-      .set('Authorization', `Bearer ${jwt}`)
+      .set('Authorization', `Bearer ${secondJWT}`)
       .set('Cookie', `refreshToken=${cookies.refreshToken}`)
       .then((response) => {
         // assert
