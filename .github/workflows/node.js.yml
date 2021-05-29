@@ -5,17 +5,19 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [10.x, 12.x, 14.x, 15.x]
+        node-version: [12.x, 14.x]
     steps:
     - uses: actions/checkout@v2
-    - name: Install modules
-      run: npm install
     - name: Format codebase
       run: npm run format
+    - name: Install modules
+      run: npm install
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+    - name: Build the app
+      run: npm run build
     - name: Run tests
       run: npm run precommit-test
       env: 
