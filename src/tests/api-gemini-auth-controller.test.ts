@@ -69,6 +69,7 @@ beforeAll(async () => {
 beforeEach(async () => {
   const loginReponse = await request(server).post('/login').send({ email: 'test@test.test', password: 'Abcd1234' });
   jwt = loginReponse.body.jwt;
+  // console.log(loginReponse.body)
   cookies = extractCookies(loginReponse.headers);
 });
 

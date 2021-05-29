@@ -69,11 +69,11 @@ beforeEach(async () => {
   const loginReponse = await request(server).post('/login').send({ email: 'test@test.test', password: 'Abcd1234' });
   jwt = loginReponse.body.jwt;
   cookies = extractCookies(loginReponse.headers);
-  return request(server)
+  jwt = (await request(server)
     .post('/save-gemini-access')
     .set('Authorization', `Bearer ${jwt}`)
     .set('Cookie', `refreshToken=${cookies.refreshToken}`)
-    .send({ apiKey: 'account-v0HhqXlhJ4ZUUvTvo5C1', apiSecret: '3DKAJxk2kPpgv12GGndDZBBdtqM1' });
+    .send({ apiKey: 'account-v0HhqXlhJ4ZUUvTvo5C1', apiSecret: '3DKAJxk2kPpgv12GGndDZBBdtqM1' })).body.JWTToken
 });
 
 /**
@@ -159,7 +159,7 @@ describe('GET /balances', () => {
  * test GET to /gemini/account-transactions/:currencyCode
  */
 describe('GET /account-transactions/:currencyCode', () => {
-  test('responds with 201', async () => {
+  test('responds with 200', async () => {
     // act
     return request(server)
       .get('/account-transactions/btc')

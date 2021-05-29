@@ -6,8 +6,8 @@
   "scripts": {
     "start": "ts-node-dev --respawn --files src/index.ts",
     "format": "npx prettier --write ./src",
-    "dev-test": "jest --watch",
-    "precommit-test": "jest --bail"
+    "dev-test": "jest -i --watch",
+    "precommit-test": "jest -i"
   },
   "repository": {
     "type": "git",

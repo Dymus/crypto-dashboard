@@ -72,6 +72,8 @@ beforeEach(async () => {
     .send({ email: 'test@test.test', password: 'Abcd1234', rememerme: false });
   jwt = loginReponse.body.jwt;
   invalidJwt = invalidLoginReponse.body.jwt;
+  // console.log(loginReponse.body)
+  // console.log(invalidLoginReponse.body)
   cookies = extractCookies(loginReponse.headers);
   invalidCookies = extractCookies(invalidLoginReponse.headers);
 });

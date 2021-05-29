@@ -11,10 +11,11 @@ import { User, UserModel } from '../models/user-model';
 import authRoutes from '../routes/auth';
 import { RequestError } from '../types/RequestError';
 import { extractCookies } from './test-helpers/cookie-helper';
+import { createUser } from '../database/userDB';
+import { hashSync } from 'bcrypt';
 
 let server: Server;
 let mongoose;
-let cookies;
 
 beforeAll(async () => {
   const myEnv = config();
@@ -55,13 +56,16 @@ beforeAll(async () => {
   server.listen();
 });
 
+afterEach(async () => {
+  await UserModel.deleteMany({ email: 'test@test.test' });
+  return UserModel.deleteMany({ email: 'test2@test.test' });
+});
+
 /**
  * test POST to /register endpoint
  */
 describe('POST /register', () => {
   test('responds with 201', async () => {
-    // arrange
-    await UserModel.deleteMany({ email: 'test@test.test' });
     // act
     return request(server)
       .post('/register')
@@ -73,6 +77,8 @@ describe('POST /register', () => {
   });
 
   test('responds with 422 because already registered with this email', async () => {
+    // arrange
+    await createUser({ email: 'test@test.test', password: hashSync('Abcd1234', 5) });
     // act
     return request(server)
       .post('/register')
@@ -132,20 +138,25 @@ describe('POST /register', () => {
  */
 describe('POST /login', () => {
   test('responds with 200', async () => {
+    // arrange
+    await createUser({ email: 'test@test.test', password: hashSync('Abcd1234', 5) });
+
     // act
     return request(server)
       .post('/login')
       .send({ email: 'test@test.test', password: 'Abcd1234', rememberMe: false })
       .then((response) => {
-        cookies = extractCookies(response.headers);
         // assert
         expect(response.statusCode).toBe(200);
         expect(response.body.jwt).toBeTruthy();
-        expect(cookies.refreshToken).toBeTruthy();
+        expect(extractCookies(response.headers)['refreshToken']).toBeTruthy();
       });
   });
 
   test('responds with 422 because invalid email', async () => {
+    // arrange
+    await createUser({ email: 'test@test.test', password: hashSync('Abcd1234', 5) });
+
     // act
     return request(server)
       .post('/login')
@@ -157,6 +168,9 @@ describe('POST /login', () => {
   });
 
   test('responds with 401 because invalid password', async () => {
+    // arrange
+    await createUser({ email: 'test@test.test', password: hashSync('Abcd1234', 5) });
+
     // act
     return request(server)
       .post('/login')
@@ -172,11 +186,16 @@ describe('POST /login', () => {
  * test GET to /refresh-token endpoint
  */
 describe('GET /refresh-token', () => {
-  // act
   test('responds with 201', async () => {
+    // arrange
+    await createUser({ email: 'test@test.test', password: hashSync('Abcd1234', 5) });
+    const initialResponse = await request(server).post('/login').send({ email: 'test@test.test', password: 'Abcd1234', rememberMe: false })
+    const cookies = extractCookies(initialResponse.headers);
+    
+    // act
     return request(server)
       .get('/refresh-token')
-      .set('Cookie', `refreshToken=${cookies.refreshToken}`)
+      .set('Cookie', `refreshToken=${cookies['refreshToken']}`)
       .then((response) => {
         // assert
         expect(response.statusCode).toBe(201);
@@ -185,6 +204,9 @@ describe('GET /refresh-token', () => {
   });
 
   test('responds with 401 because invalid refresh token', async () => {
+    // arrange
+    await createUser({ email: 'test@test.test', password: hashSync('Abcd1234', 5) });
+
     // act
     return request(server)
       .get('/refresh-token')
@@ -199,6 +221,9 @@ describe('GET /refresh-token', () => {
   });
 
   test('responds with 401 because missing refresh token', async () => {
+    // arrange
+    await createUser({ email: 'test@test.test', password: hashSync('Abcd1234', 5) });
+
     // act
     return request(server)
       .get('/refresh-token')
