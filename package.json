@@ -5,7 +5,6 @@
   "main": "dist/app.js",
   "scripts": {
     "start": "ts-node-dev --respawn --files src/index.ts",
-    "build": "",
     "format": "npx prettier --write ./src",
     "test": "jest --watch"
   },
