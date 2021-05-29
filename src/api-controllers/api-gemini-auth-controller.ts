@@ -15,8 +15,8 @@ export const setGeminiApiAndSecret: RequestHandler = async (req, res, next) => {
       new RequestError(
         400,
         'Unexpected Error',
-        `The server encountered an issue when trying to authenticate your Gemini account with ${process.env.APP_NAME}`
-      )
+        `The server encountered an issue when trying to authenticate your Gemini account with ${process.env.APP_NAME}`,
+      ),
     );
   }
 };
@@ -29,12 +29,6 @@ export const deleteGeminiAccess: RequestHandler = async (req, res, next) => {
     const newJWTToken = await refreshJWT(req.cookies.refreshToken);
     return res.status(200).json({ message: 'Gemini tokens deleted successfully', JWTToken: newJWTToken });
   } catch {
-    next(
-      new RequestError(
-        400,
-        'Unexpected Error',
-        `The server encountered an issue when trying to delete your Gemini API keys`
-      )
-    );
+    next(new RequestError(400, 'Unexpected Error', `The server encountered an issue when trying to delete your Gemini API keys`));
   }
 };

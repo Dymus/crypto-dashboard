@@ -8,7 +8,7 @@ import { getUserTokenDataById } from '../database/userDB';
 export const refreshJWT = async (JWTRefreshToken: string) => {
   const decodedJWTToken = verify(
     JWTRefreshToken,
-    fs.readFileSync(path.join(__dirname, '..', '..', 'keys', 'public.pem'))
+    fs.readFileSync(path.join(__dirname, '..', '..', 'keys', 'public.pem')),
   ) as JWTTokenPayload;
   if (decodedJWTToken) {
     const user = await getUserTokenDataById(decodedJWTToken.userId);
@@ -23,7 +23,7 @@ export const refreshJWT = async (JWTRefreshToken: string) => {
       {
         expiresIn: 7200,
         algorithm: 'RS256',
-      }
+      },
     );
     return newJWTToken;
   }

@@ -20,8 +20,8 @@ export const coinbaseGet = async (url: string, user: any) => {
           process.env.COINBASE_CLIENT_ID
         }&client_secret=${process.env.COINBASE_CLIENT_SECRET}&refresh_token=${cryptoJs.AES.decrypt(
           user.coinbaseTokens.refresh_token,
-          user.password
-        ).toString(cryptoJs.enc.Utf8)}`
+          user.password,
+        ).toString(cryptoJs.enc.Utf8)}`,
       );
 
       const savedUser = await saveCoinbaseTokens(user._id, {
@@ -51,7 +51,7 @@ export const revokeCoinbaseTokens = async (user: any) => {
           'Accept-Language': 'en',
           'Content-Type': 'application/json',
         },
-      }
+      },
     );
     return response;
   } catch (error) {
@@ -61,8 +61,8 @@ export const revokeCoinbaseTokens = async (user: any) => {
           process.env.COINBASE_CLIENT_ID
         }&client_secret=${process.env.COINBASE_CLIENT_SECRET}&refresh_token=${cryptoJs.AES.decrypt(
           user.coinbaseTokens.refresh_token,
-          user.password
-        ).toString(cryptoJs.enc.Utf8)}`
+          user.password,
+        ).toString(cryptoJs.enc.Utf8)}`,
       );
       const savedUser = await saveCoinbaseTokens(user._id, {
         access_token: coinbaseTokenResponse.data.access_token,
@@ -71,7 +71,7 @@ export const revokeCoinbaseTokens = async (user: any) => {
       if (savedUser.coinbaseTokens) {
         error.config.headers.Authorization = `Bearer ${savedUser.coinbaseTokens.access_token}`;
         const repeatedResponse = await axios.request(error.config);
-        return repeatedResponse
+        return repeatedResponse;
       }
     }
   }

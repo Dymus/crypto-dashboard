@@ -88,7 +88,7 @@ const getHourlyCoingeckoData = async (users: DocumentType<User>[]) => {
           }
           return coingeckoNames;
         })
-        .join(',')}&per_page=100&page=1&sparkline=false&price_change_percentage=1h`
+        .join(',')}&per_page=100&page=1&sparkline=false&price_change_percentage=1h`,
     )
   ).data;
 };
@@ -104,7 +104,7 @@ const getDailyCoingeckoData = async (users: DocumentType<User>[]) => {
           }
           return coingeckoNames;
         })
-        .join(',')}&per_page=100&page=1&sparkline=false&price_change_percentage=24h`
+        .join(',')}&per_page=100&page=1&sparkline=false&price_change_percentage=24h`,
     )
   ).data;
 };
@@ -120,7 +120,7 @@ const getWeeklyCoingeckoData = async (users: DocumentType<User>[]) => {
           }
           return coingeckoNames;
         })
-        .join(',')}&per_page=100&page=1&sparkline=false&price_change_percentage=7d`
+        .join(',')}&per_page=100&page=1&sparkline=false&price_change_percentage=7d`,
     )
   ).data;
 };
@@ -139,9 +139,7 @@ const setUserHourlyNotifications = (user: DocumentType<User>, coingeckoData) => 
         createdAt: Date.now(),
         iconUrl: coinData.image,
         title:
-          coinData.price_change_percentage_1h_in_currency > 0
-            ? `${coinData.name} is going up`
-            : `${coinData.name} is going down`,
+          coinData.price_change_percentage_1h_in_currency > 0 ? `${coinData.name} is going up` : `${coinData.name} is going down`,
         message:
           coinData.price_change_percentage_1h_in_currency > 0
             ? `Hour price alert: ${coinData.name} went up ${
@@ -172,7 +170,7 @@ const setUserHourlyNotifications = (user: DocumentType<User>, coingeckoData) => 
       },
       () => {
         return false;
-      }
+      },
     );
 };
 
@@ -223,7 +221,7 @@ const setUserDailyNotifications = (user: DocumentType<User>, coingeckoData) => {
       },
       () => {
         return false;
-      }
+      },
     );
 };
 
@@ -241,9 +239,7 @@ const setUserWeeklyNotifications = (user: DocumentType<User>, coingeckoData) => 
         createdAt: Date.now(),
         iconUrl: coinData.image,
         title:
-          coinData.price_change_percentage_7d_in_currency > 0
-            ? `${coinData.name} is going up`
-            : `${coinData.name} is going down`,
+          coinData.price_change_percentage_7d_in_currency > 0 ? `${coinData.name} is going up` : `${coinData.name} is going down`,
         message:
           coinData.price_change_percentage_7d_in_currency > 0
             ? `Week price alert: ${coinData.name} went up ${
@@ -274,6 +270,6 @@ const setUserWeeklyNotifications = (user: DocumentType<User>, coingeckoData) => 
       },
       () => {
         return false;
-      }
+      },
     );
 };

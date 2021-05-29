@@ -61,7 +61,7 @@ beforeAll(async () => {
 describe('POST /register', () => {
   test('responds with 201', async () => {
     // arrange
-    await UserModel.deleteMany({email: 'test@test.test'})
+    await UserModel.deleteMany({ email: 'test@test.test' });
     // act
     return request(server)
       .post('/register')
@@ -183,12 +183,15 @@ describe('GET /refresh-token', () => {
         expect(response.body.jwt).toBeTruthy();
       });
   });
-  
+
   test('responds with 401 because invalid refresh token', async () => {
     // act
     return request(server)
       .get('/refresh-token')
-      .set('Cookie', `refreshToken=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MGFmYzVkNTBiMjFiY2MzMDBjZjQ4YTYiLCJpYXQiOjE2MjIxMzIxODEsImV4cCI6MTYyMjEzOTM4MX0.Rq-FBMik97zDZsczWCSZc0fUo34O3BJi6W_y1cxDLThxeufhGZfmoZ5nr_5jUs25m03aLhn3NwWD6E6Mfz_tIfuIATNvQl3MyQVYe6PeE-qMWgmEQY4ILAASoQTEyEGYz1tuVbT2lZdi25_s9XtyETWI0dSGJQJQcGc4hL3Hyy0`)
+      .set(
+        'Cookie',
+        `refreshToken=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MGFmYzVkNTBiMjFiY2MzMDBjZjQ4YTYiLCJpYXQiOjE2MjIxMzIxODEsImV4cCI6MTYyMjEzOTM4MX0.Rq-FBMik97zDZsczWCSZc0fUo34O3BJi6W_y1cxDLThxeufhGZfmoZ5nr_5jUs25m03aLhn3NwWD6E6Mfz_tIfuIATNvQl3MyQVYe6PeE-qMWgmEQY4ILAASoQTEyEGYz1tuVbT2lZdi25_s9XtyETWI0dSGJQJQcGc4hL3Hyy0`,
+      )
       .then((response) => {
         // assert
         expect(response.statusCode).toBe(401);

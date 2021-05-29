@@ -16,8 +16,8 @@ export const postSaveCoinbaseToken: RequestHandler = async (req, res, next) => {
       new RequestError(
         409,
         'Unexpected Error',
-        `The server encountered an issue when trying to connect your Coinbase account with ${process.env.APP_NAME}`
-      )
+        `The server encountered an issue when trying to connect your Coinbase account with ${process.env.APP_NAME}`,
+      ),
     );
   }
 };
@@ -32,16 +32,10 @@ export const deleteCoinbaseAccess: RequestHandler = async (req, res, next) => {
     .then(() => {
       return refreshJWT(req.cookies.refreshToken);
     })
-    .then((newJWTToken) =>
-      res.status(201).json({ message: 'Coinbase tokens deleted successfully', JWTToken: newJWTToken })
-    )
+    .then((newJWTToken) => res.status(201).json({ message: 'Coinbase tokens deleted successfully', JWTToken: newJWTToken }))
     .catch(() => {
       throw next(
-        new RequestError(
-          400,
-          'Unexpected Error',
-          `The server encountered an issue when trying to delete your Coinbase access`
-        )
+        new RequestError(400, 'Unexpected Error', `The server encountered an issue when trying to delete your Coinbase access`),
       );
     });
 };

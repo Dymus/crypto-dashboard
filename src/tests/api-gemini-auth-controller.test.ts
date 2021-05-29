@@ -133,7 +133,7 @@ describe('POST /save-gemini-access', () => {
       .post('/save-gemini-access')
       .set(
         'Authorization',
-        `Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1MDcyOTk5Zjc1N2QyMTYxNWM2OWFjMGMiLCJlbWFpbCI6InNAaC5zaCIsImlzQ29pbmJhc2VBcHByb3ZlZCI6ZmFsc2UsImlzR2VtaW5pQXBwcm92ZWQiOmZhbHNlLCJpYXQiOjE2MjIxOTI4ODYsImV4cCI6MjM0MjE5Mjg4Nn0.E_uWAjXIFtcIcIdgAnAM4fSkpeVlFxKMMtp9v10YTXVTzjXzGPkdbZpsgGi0wfWOZa7J0c9_d-mV6yCstF5gyPx2E_ftmBscBPY_2cHEN2KSAnGfhL5u24KhVQjMyOpdPoAsBEErWJbFjoyovl588mEiyOTHJTmSrnmnl8cu9jc`
+        `Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1MDcyOTk5Zjc1N2QyMTYxNWM2OWFjMGMiLCJlbWFpbCI6InNAaC5zaCIsImlzQ29pbmJhc2VBcHByb3ZlZCI6ZmFsc2UsImlzR2VtaW5pQXBwcm92ZWQiOmZhbHNlLCJpYXQiOjE2MjIxOTI4ODYsImV4cCI6MjM0MjE5Mjg4Nn0.E_uWAjXIFtcIcIdgAnAM4fSkpeVlFxKMMtp9v10YTXVTzjXzGPkdbZpsgGi0wfWOZa7J0c9_d-mV6yCstF5gyPx2E_ftmBscBPY_2cHEN2KSAnGfhL5u24KhVQjMyOpdPoAsBEErWJbFjoyovl588mEiyOTHJTmSrnmnl8cu9jc`,
       )
       .set('Cookie', `refreshToken=${cookies.refreshToken}`)
       .send({ apiKey: 'abcdEFGH', apiSecret: '12345678' })
@@ -150,11 +150,13 @@ describe('POST /save-gemini-access', () => {
 describe('DELETE /delete-gemini-access', () => {
   test('responds with 200', async () => {
     // arrange
-    const newJWT = (await request(server)
-      .post('/save-gemini-access')
-      .set('Authorization', `Bearer ${jwt}`)
-      .set('Cookie', `refreshToken=${cookies.refreshToken}`)
-      .send({ apiKey: 'abcdEFGH', apiSecret: '12345678' })).body.JWTToken
+    const newJWT = (
+      await request(server)
+        .post('/save-gemini-access')
+        .set('Authorization', `Bearer ${jwt}`)
+        .set('Cookie', `refreshToken=${cookies.refreshToken}`)
+        .send({ apiKey: 'abcdEFGH', apiSecret: '12345678' })
+    ).body.JWTToken;
 
     // act
     return request(server)
@@ -169,16 +171,20 @@ describe('DELETE /delete-gemini-access', () => {
 
   test('responds with 401 because not connected with Gemini', async () => {
     //arrange
-    const firstJWT = (await request(server)
-      .post('/save-gemini-access')
-      .set('Authorization', `Bearer ${jwt}`)
-      .set('Cookie', `refreshToken=${cookies.refreshToken}`)
-      .send({ apiKey: 'abcdEFGH', apiSecret: '12345678' })).body.JWTToken
+    const firstJWT = (
+      await request(server)
+        .post('/save-gemini-access')
+        .set('Authorization', `Bearer ${jwt}`)
+        .set('Cookie', `refreshToken=${cookies.refreshToken}`)
+        .send({ apiKey: 'abcdEFGH', apiSecret: '12345678' })
+    ).body.JWTToken;
 
-    const secondJWT = (await request(server)
-      .delete('/delete-gemini-access')
-      .set('Authorization', `Bearer ${firstJWT}`)
-      .set('Cookie', `refreshToken=${cookies.refreshToken}`)).body.JWTToken
+    const secondJWT = (
+      await request(server)
+        .delete('/delete-gemini-access')
+        .set('Authorization', `Bearer ${firstJWT}`)
+        .set('Cookie', `refreshToken=${cookies.refreshToken}`)
+    ).body.JWTToken;
 
     // act
     return request(server)

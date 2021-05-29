@@ -7,11 +7,7 @@ const router = Router();
 
 router.get('/refresh-token', ApiAuthController.refreshJWTToken);
 
-router.post(
-  '/register',
-  [Validator.validateRegistration, Validator.checkValidationResult],
-  ApiAuthController.postRegister
-);
+router.post('/register', [Validator.validateRegistration, Validator.checkValidationResult], ApiAuthController.postRegister);
 
 router.post('/login', [Validator.validateLogin, Validator.checkValidationResult], ApiAuthController.postLogin);
 

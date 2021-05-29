@@ -9,8 +9,9 @@ export const isCoinbaseAuth: RequestHandler = async (req, _, next) => {
     next(
       new RequestError(
         401,
-        "Unauthorized Access", `You haven't connected Coinbase to ${process.env.APP_NAME} yet. Please do so, and repeat the request.`
-      )
+        'Unauthorized Access',
+        `You haven't connected Coinbase to ${process.env.APP_NAME} yet. Please do so, and repeat the request.`,
+      ),
     );
   }
 };

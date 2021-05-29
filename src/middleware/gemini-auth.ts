@@ -1,12 +1,12 @@
-import cryptoJs from "crypto-js";
-import { RequestHandler } from "express";
-import { RequestError } from "../types/RequestError";
+import cryptoJs from 'crypto-js';
+import { RequestHandler } from 'express';
+import { RequestError } from '../types/RequestError';
 
 // tested partially by calling API points
 export const addGeminiSecretToRequest: RequestHandler = async (req, _, next) => {
   req.geminiSecret = cryptoJs.AES.decrypt(req.user.geminiKeys.apiSecret, req.user.password).toString(cryptoJs.enc.Utf8);
   next();
-}
+};
 
 // tested partially by calling API points
 export const isGeminiAuth: RequestHandler = async (req, _, next) => {
@@ -16,9 +16,9 @@ export const isGeminiAuth: RequestHandler = async (req, _, next) => {
     next(
       new RequestError(
         401,
-        "Unauthorized Access", `You haven't connected Gemini to ${process.env.APP_NAME} yet. Please do so, and repeat the request.`
-      )
+        'Unauthorized Access',
+        `You haven't connected Gemini to ${process.env.APP_NAME} yet. Please do so, and repeat the request.`,
+      ),
     );
   }
-}
-
+};

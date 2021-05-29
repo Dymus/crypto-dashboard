@@ -15,9 +15,7 @@ export const refreshUserAuthStatus: RequestHandler = async (req, res, next) => {
     const newJWTToken = await refreshJWT(req.cookies.refreshToken);
     return res.status(200).json({ JWTToken: newJWTToken });
   } catch {
-    next(
-      new RequestError(400, 'Could not refresh user authentication status', 'Unknown error while updating user token')
-    );
+    next(new RequestError(400, 'Could not refresh user authentication status', 'Unknown error while updating user token'));
   }
 };
 

@@ -30,7 +30,7 @@ test('refresh the JWT with correct refresh token', async () => {
     {
       expiresIn: 20,
       algorithm: 'RS256',
-    }
+    },
   );
 
   // act
@@ -50,7 +50,7 @@ test('refresh of JWT should fail with incorrect refresh token', async () => {
     {
       expiresIn: 20,
       algorithm: 'RS256',
-    }
+    },
   );
 
   // act

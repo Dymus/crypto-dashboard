@@ -105,8 +105,8 @@ export const checkValidationResult: RequestHandler = async (req, _, next) => {
           .array()
           .map((error) => error.msg)
           .join('. '),
-        validationResult(req).array()
-      )
+        validationResult(req).array(),
+      ),
     );
   } else {
     next();

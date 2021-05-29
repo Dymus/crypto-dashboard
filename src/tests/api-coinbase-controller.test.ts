@@ -67,12 +67,14 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   const loginReponse = await request(server).post('/login').send({ email: 's@h.sh', password: 'Password1', rememerme: false });
-  const invalidLoginReponse = await request(server).post('/login').send({ email: 'test@test.test', password: 'Abcd1234', rememerme: false });
+  const invalidLoginReponse = await request(server)
+    .post('/login')
+    .send({ email: 'test@test.test', password: 'Abcd1234', rememerme: false });
   jwt = loginReponse.body.jwt;
   invalidJwt = invalidLoginReponse.body.jwt;
   cookies = extractCookies(loginReponse.headers);
   invalidCookies = extractCookies(invalidLoginReponse.headers);
-})
+});
 
 /**
  * test GET to /coinbase-api/wallet
@@ -87,9 +89,9 @@ describe('GET /wallet', () => {
       .then((response) => {
         // assert
         expect(response.statusCode).toBe(200);
-        expect(response.body.walletAccounts).toBeTruthy()
-        expect(response.body.euroWallet).toBeTruthy()
-        expect(response.body.createdAt).toBeTruthy()
+        expect(response.body.walletAccounts).toBeTruthy();
+        expect(response.body.euroWallet).toBeTruthy();
+        expect(response.body.createdAt).toBeTruthy();
       });
   });
 
@@ -119,7 +121,7 @@ describe('GET /account-transactions/:accountId', () => {
       .then((response) => {
         // assert
         expect(response.statusCode).toBe(200);
-        expect(response.body.transactions).toBeTruthy()
+        expect(response.body.transactions).toBeTruthy();
       });
   });
 

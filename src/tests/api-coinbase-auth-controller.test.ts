@@ -67,7 +67,7 @@ beforeEach(async () => {
   const loginReponse = await request(server).post('/login').send({ email: 'test@test.test', password: 'Abcd1234' });
   jwt = loginReponse.body.jwt;
   cookies = extractCookies(loginReponse.headers);
-})
+});
 
 /**
  * test POST to /coinbase/save-coinbase-access

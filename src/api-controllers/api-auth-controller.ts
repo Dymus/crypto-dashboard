@@ -16,11 +16,7 @@ export const refreshJWTToken: RequestHandler = async (req, res, next) => {
       return res.status(201).json({ jwt: newJWTToken });
     }
   } catch {
-    next(
-      new RequestError(401, 'Unauthorized Access', 'Refresh token expired, please log in again.', [
-        'ExpiredRefreshError',
-      ])
-    );
+    next(new RequestError(401, 'Unauthorized Access', 'Refresh token expired, please log in again.', ['ExpiredRefreshError']));
   }
 };
 
@@ -35,8 +31,8 @@ export const postRegister: RequestHandler = async (req, res, next) => {
       new RequestError(
         409,
         'User Not Created',
-        'User could not be created. Please reload the page and try again. If the problem persists, contact the support.'
-      )
+        'User could not be created. Please reload the page and try again. If the problem persists, contact the support.',
+      ),
     );
   }
 };
@@ -60,9 +56,9 @@ export const postLogin: RequestHandler = async (req, res, next) => {
               {
                 expiresIn: 2678400,
                 algorithm: 'RS256',
-              }
+              },
             ),
-            { httpOnly: true, maxAge: 2678400000 }
+            { httpOnly: true, maxAge: 2678400000 },
           )
           .json({
             jwt: sign(
@@ -76,19 +72,18 @@ export const postLogin: RequestHandler = async (req, res, next) => {
               {
                 expiresIn: 7200,
                 algorithm: 'RS256',
-              }
+              },
             ),
           });
       } else {
         return res
           .cookie(
             'refreshToken',
-            sign(
-              { userId: user._id.toString() },
-              fs.readFileSync(path.join(__dirname, '..', '..', 'keys', 'private.pem')),
-              { expiresIn: 7200, algorithm: 'RS256' }
-            ),
-            { httpOnly: true, maxAge: 7200000 }
+            sign({ userId: user._id.toString() }, fs.readFileSync(path.join(__dirname, '..', '..', 'keys', 'private.pem')), {
+              expiresIn: 7200,
+              algorithm: 'RS256',
+            }),
+            { httpOnly: true, maxAge: 7200000 },
           )
           .json({
             jwt: sign(
@@ -102,7 +97,7 @@ export const postLogin: RequestHandler = async (req, res, next) => {
               {
                 expiresIn: 7200,
                 algorithm: 'RS256',
-              }
+              },
             ),
           });
       }

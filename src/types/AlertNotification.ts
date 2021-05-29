@@ -5,6 +5,6 @@ type AlertNotification = {
   iconUrl: string;
   title: string;
   message: string;
-  wasViewed: boolean,
-  type: string
-}
+  wasViewed: boolean;
+  type: string;
+};

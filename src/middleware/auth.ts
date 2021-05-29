@@ -12,16 +12,12 @@ import { getUserById } from '../database/userDB';
 export const isAuth: RequestHandler = async (req, _, next) => {
   try {
     if (!req.get('Authorization')) {
-      throw new RequestError(
-        401,
-        'Unauthorized Access',
-        'Only authorized users have access to this page, please log in.'
-      );
+      throw new RequestError(401, 'Unauthorized Access', 'Only authorized users have access to this page, please log in.');
     }
 
     const decodedJWTToken = verify(
       req.get('Authorization').split(' ')[1],
-      fs.readFileSync(path.join(__dirname, '..', '..', 'keys', 'public.pem'))
+      fs.readFileSync(path.join(__dirname, '..', '..', 'keys', 'public.pem')),
     ) as JWTTokenPayload;
     if (decodedJWTToken) {
       const loadedUser = await getUserById(decodedJWTToken.userId, { notifications: 0 });
@@ -32,7 +28,7 @@ export const isAuth: RequestHandler = async (req, _, next) => {
         next(
           new RequestError(401, 'Unauthorized Access', 'Your token expired, please refresh it or log in again.', [
             'TokenExpiredError',
-          ])
+          ]),
         );
       }
     }
@@ -41,7 +37,7 @@ export const isAuth: RequestHandler = async (req, _, next) => {
       next(
         new RequestError(401, 'Unauthorized Access', 'Your token expired, please refresh it or log in again.', [
           'TokenExpiredError',
-        ])
+        ]),
       );
     } else {
       next(new RequestError(401, 'Unauthorized Access', 'Invalid token, please log in again.'));

@@ -12,13 +12,13 @@ router.get('/wallet', [isAuth, isCoinbaseAuth], ApiCoinbaseController.getCoinbas
 router.get(
   '/account-transactions/:accountId',
   [Validator.validateGetCoinbaseTransactions, Validator.checkValidationResult, isAuth, isCoinbaseAuth],
-  ApiCoinbaseController.getCoinbaseTransactionsForAccount
+  ApiCoinbaseController.getCoinbaseTransactionsForAccount,
 );
 
 router.get(
   '/account-transactions',
   [Validator.validateGetCoinbaseTransactions, Validator.checkValidationResult, isAuth, isCoinbaseAuth],
-  ApiCoinbaseController.getCoinbaseTransactionsForAccount
+  ApiCoinbaseController.getCoinbaseTransactionsForAccount,
 );
 
 router.get('/portfolio-performance', [isAuth, isCoinbaseAuth], ApiCoinbaseController.getCoinbasePortfolioPerformance);

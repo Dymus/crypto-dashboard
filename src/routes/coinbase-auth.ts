@@ -10,7 +10,7 @@ const router = Router();
 router.post(
   '/save-coinbase-access',
   [isAuth, Validator.validateSaveCoinbaseToken, Validator.checkValidationResult],
-  ApiCoinbaseAuthController.postSaveCoinbaseToken
+  ApiCoinbaseAuthController.postSaveCoinbaseToken,
 );
 
 router.delete('/delete-coinbase-access', [isAuth, isCoinbaseAuth], ApiCoinbaseAuthController.deleteCoinbaseAccess);

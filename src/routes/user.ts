@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import { isAuth } from '../middleware/auth';
-import * as Validator from '../middleware/validation'
+import * as Validator from '../middleware/validation';
 import * as ApiUserController from '../api-controllers/api-user-controller';
 
 const router = Router();

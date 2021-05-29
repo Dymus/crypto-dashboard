@@ -8,4 +8,4 @@ export type CoinbaseAccount = {
   fiatBalance: number;
   slug: string;
   allocation: number;
-}
+};

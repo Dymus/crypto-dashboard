@@ -12,13 +12,13 @@ export const getGeminiAvailableBalances: RequestHandler = async (req, res, next)
       req.user.geminiKeys.apiKey,
       req.geminiSecret,
       'balances',
-      JSON.stringify({ nonce: Date.now(), request: '/v1/balances' })
+      JSON.stringify({ nonce: Date.now(), request: '/v1/balances' }),
     );
     const geminiAccountResponse = await geminiGet(
       req.user.geminiKeys.apiKey,
       req.geminiSecret,
       'account',
-      JSON.stringify({ nonce: Date.now(), request: '/v1/account' })
+      JSON.stringify({ nonce: Date.now(), request: '/v1/account' }),
     );
     const dollarAccount = geminiBalancesResponse.data.find((account) => account.currency === 'USD');
     const euroWallet = { balance: 0 };
@@ -37,16 +37,16 @@ export const getGeminiAvailableBalances: RequestHandler = async (req, res, next)
         new RequestError(
           401,
           'Gemini Authentication Error',
-          'The Gemini API keys you provided seem to be invalid. Please check if you inserted the correct ones and retry.'
-        )
+          'The Gemini API keys you provided seem to be invalid. Please check if you inserted the correct ones and retry.',
+        ),
       );
     } else {
       next(
         new RequestError(
           400,
           'Fatal Gemini Error',
-          'There was an error while accessing your Gemini balances. If this error persist, try updating your API keys.'
-        )
+          'There was an error while accessing your Gemini balances. If this error persist, try updating your API keys.',
+        ),
       );
     }
   }
@@ -56,26 +56,30 @@ export const getGeminiAvailableBalances: RequestHandler = async (req, res, next)
 export const getGeminiTradesForAccount: RequestHandler = async (req, res, next) => {
   try {
     if (req.params.currencyCode.toLowerCase() === 'eth' || req.params.currencyCode.toLowerCase() === 'btc') {
-      const geminiUsdResponseBody = (await geminiGet(
-        req.user.geminiKeys.apiKey,
-        req.geminiSecret,
-        'mytrades',
-        JSON.stringify({
-          nonce: Date.now(),
-          request: '/v1/mytrades',
-          symbol: `${req.params.currencyCode.toLowerCase()}eur`,
-        })
-      )).data
-      const geminiEurResponseBody = (await geminiGet(
-        req.user.geminiKeys.apiKey,
-        req.geminiSecret,
-        'mytrades',
-        JSON.stringify({
-          nonce: Date.now(),
-          request: '/v1/mytrades',
-          symbol: `${req.params.currencyCode.toLowerCase()}usd`,
-        })
-      )).data
+      const geminiUsdResponseBody = (
+        await geminiGet(
+          req.user.geminiKeys.apiKey,
+          req.geminiSecret,
+          'mytrades',
+          JSON.stringify({
+            nonce: Date.now(),
+            request: '/v1/mytrades',
+            symbol: `${req.params.currencyCode.toLowerCase()}eur`,
+          }),
+        )
+      ).data;
+      const geminiEurResponseBody = (
+        await geminiGet(
+          req.user.geminiKeys.apiKey,
+          req.geminiSecret,
+          'mytrades',
+          JSON.stringify({
+            nonce: Date.now(),
+            request: '/v1/mytrades',
+            symbol: `${req.params.currencyCode.toLowerCase()}usd`,
+          }),
+        )
+      ).data;
       const orderDates = [];
       const exchangeRates = {};
       const orders = {};
@@ -86,8 +90,7 @@ export const getGeminiTradesForAccount: RequestHandler = async (req, res, next) 
           orderDates.push({ orderId: trade.order_id, date });
           exchangeRates[trade.order_id] = axios.get(`https://api.exchangerate.host/${date}?base=USD&symbols=EUR`);
         } else {
-          exchangeRates[trade.order_id] =
-            exchangeRates[orderDates.find((orderDate) => orderDate.date === date).orderId];
+          exchangeRates[trade.order_id] = exchangeRates[orderDates.find((orderDate) => orderDate.date === date).orderId];
         }
       }
 
@@ -100,8 +103,7 @@ export const getGeminiTradesForAccount: RequestHandler = async (req, res, next) 
         if (geminiUsdResponseBody[i].order_id in orders) {
           orders[geminiUsdResponseBody[i].order_id].orderAmount += +geminiUsdResponseBody[i].amount;
           orders[geminiUsdResponseBody[i].order_id].orderFiatAmount +=
-            (+geminiUsdResponseBody[i].amount * +geminiUsdResponseBody[i].price +
-              +geminiUsdResponseBody[i].fee_amount) *
+            (+geminiUsdResponseBody[i].amount * +geminiUsdResponseBody[i].price + +geminiUsdResponseBody[i].fee_amount) *
             exchangeRate;
         } else {
           orders[geminiUsdResponseBody[i].order_id] = {
@@ -109,8 +111,7 @@ export const getGeminiTradesForAccount: RequestHandler = async (req, res, next) 
             orderType: `USD ${geminiUsdResponseBody[i].type}`,
             orderAmount: +geminiUsdResponseBody[i].amount,
             orderFiatAmount:
-              (+geminiUsdResponseBody[i].amount * +geminiUsdResponseBody[i].price +
-                +geminiUsdResponseBody[i].fee_amount) *
+              (+geminiUsdResponseBody[i].amount * +geminiUsdResponseBody[i].price + +geminiUsdResponseBody[i].fee_amount) *
               exchangeRate,
           };
         }
@@ -163,7 +164,7 @@ export const getGeminiTradesForAccount: RequestHandler = async (req, res, next) 
           nonce: Date.now(),
           request: '/v1/mytrades',
           symbol: `${req.params.currencyCode.toLowerCase()}usd`,
-        })
+        }),
       );
 
       const orderDates = [];
@@ -175,8 +176,7 @@ export const getGeminiTradesForAccount: RequestHandler = async (req, res, next) 
           orderDates.push({ orderId: trade.order_id, date });
           exchangeRates[trade.order_id] = axios.get(`https://api.exchangerate.host/${date}?base=USD&symbols=EUR`);
         } else {
-          exchangeRates[trade.order_id] =
-            exchangeRates[orderDates.find((orderDate) => orderDate.date === date).orderId];
+          exchangeRates[trade.order_id] = exchangeRates[orderDates.find((orderDate) => orderDate.date === date).orderId];
         }
       }
 
@@ -189,8 +189,7 @@ export const getGeminiTradesForAccount: RequestHandler = async (req, res, next) 
         if (geminiUsdResponse.data[i].order_id in orders) {
           orders[geminiUsdResponse.data[i].order_id].orderAmount += +geminiUsdResponse.data[i].amount;
           orders[geminiUsdResponse.data[i].order_id].orderFiatAmount +=
-            (+geminiUsdResponse.data[i].amount * +geminiUsdResponse.data[i].price +
-              +geminiUsdResponse.data[i].fee_amount) *
+            (+geminiUsdResponse.data[i].amount * +geminiUsdResponse.data[i].price + +geminiUsdResponse.data[i].fee_amount) *
             exchangeRate;
         } else {
           orders[geminiUsdResponse.data[i].order_id] = {
@@ -198,8 +197,7 @@ export const getGeminiTradesForAccount: RequestHandler = async (req, res, next) 
             orderType: `USD ${geminiUsdResponse.data[i].type}`,
             orderAmount: +geminiUsdResponse.data[i].amount,
             orderFiatAmount:
-              (+geminiUsdResponse.data[i].amount * +geminiUsdResponse.data[i].price +
-                +geminiUsdResponse.data[i].fee_amount) *
+              (+geminiUsdResponse.data[i].amount * +geminiUsdResponse.data[i].price + +geminiUsdResponse.data[i].fee_amount) *
               exchangeRate,
           };
         }
@@ -233,24 +231,24 @@ export const getGeminiTradesForAccount: RequestHandler = async (req, res, next) 
         new RequestError(
           401,
           'Gemini Authentication Error',
-          'The Gemini API keys you provided seem to be invalid. Please check if you inserted the correct ones and retry.'
-        )
+          'The Gemini API keys you provided seem to be invalid. Please check if you inserted the correct ones and retry.',
+        ),
       );
     } else if (error.response && error.response.data.reason === 'InvalidNonce') {
       next(
         new RequestError(
           400,
           'Gemini None Error',
-          'There was an error on our side. To fix this, please upload new Gemini API keys and retry.'
-        )
+          'There was an error on our side. To fix this, please upload new Gemini API keys and retry.',
+        ),
       );
     } else {
       next(
         new RequestError(
           400,
           'Internal Server Error',
-          'Could not find your Gemini wallet transactions. This is most likely an internal error, please contact the support.'
-        )
+          'Could not find your Gemini wallet transactions. This is most likely an internal error, please contact the support.',
+        ),
       );
     }
   }

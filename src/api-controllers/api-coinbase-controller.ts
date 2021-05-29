@@ -24,16 +24,14 @@ export const getCoinbaseWallet: RequestHandler = async (req, res, next) => {
       if (account.type !== 'fiat') return true;
       else euroWallet = account;
     });
-    return res
-      .status(200)
-      .json({ walletAccounts, euroWallet, createdAt: Date.parse(userResponse.data.data.created_at) });
+    return res.status(200).json({ walletAccounts, euroWallet, createdAt: Date.parse(userResponse.data.data.created_at) });
   } catch {
     next(
       new RequestError(
         404,
         'Internal Server Error',
-        'Could not find your Coinbase wallet. This is most likely an internal error, please contact the support.'
-      )
+        'Could not find your Coinbase wallet. This is most likely an internal error, please contact the support.',
+      ),
     );
   }
 };
@@ -42,7 +40,7 @@ export const getCoinbaseTransactionsForAccount: RequestHandler = async (req, res
   try {
     const transactionsResponse = await coinbaseGet(
       `https://api.coinbase.com/v2/accounts/${req.params.accountId}/transactions`,
-      req.user
+      req.user,
     );
     const mappedTransactions = transactionsResponse.data.data
       .map((transaction) => {
@@ -65,8 +63,8 @@ export const getCoinbaseTransactionsForAccount: RequestHandler = async (req, res
       new RequestError(
         404,
         'Internal Server Error',
-        'Could not find your Coinbase wallet transactions. This is most likely an internal error, please contact the support.'
-      )
+        'Could not find your Coinbase wallet transactions. This is most likely an internal error, please contact the support.',
+      ),
     );
   }
 };
@@ -75,7 +73,7 @@ export const getCoinbasePortfolioPerformance: RequestHandler = async (req, res, 
   try {
     const portfolioPerformanceResponse = await coinbaseGet(
       'https://www.coinbase.com/api/v3/coinbase.public_api.authed.portfolio_performance.PerformanceCalculator/Calculate?q=eyJkaXNwbGF5Q3VycmVuY3kiOiJFVVIiLCJwZXJpb2QiOiJVTktOT1dOIn0%3D',
-      req.user
+      req.user,
     );
     return res.status(200).json(portfolioPerformanceResponse.data);
   } catch {
@@ -83,8 +81,8 @@ export const getCoinbasePortfolioPerformance: RequestHandler = async (req, res, 
       new RequestError(
         404,
         'Internal Server Error',
-        'Could not find your Coinbase portfolio data. This is most likely an internal error, please contact the support.'
-      )
+        'Could not find your Coinbase portfolio data. This is most likely an internal error, please contact the support.',
+      ),
     );
   }
 };

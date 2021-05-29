@@ -74,7 +74,7 @@ test('fail to get user with an incorrect email', async () => {
 /**
  * test getUserById method
  */
- test('get user with a correct id', async () => {
+test('get user with a correct id', async () => {
   // act
   return getUserById(testUser._id).then((user) => {
     // assert
@@ -111,7 +111,7 @@ test('fail to save coinbase tokens when provided incorrect user ID', async () =>
     (error) => {
       // assert
       expect(error).toBeInstanceOf(Error);
-    }
+    },
   );
 });
 
@@ -230,7 +230,7 @@ test("mark all user's alert notifications as viewed when provided correct user I
 });
 
 afterAll(async () => {
-  await UserModel.findOneAndDelete({email: 'test2@test.test'})
+  await UserModel.findOneAndDelete({ email: 'test2@test.test' });
   return UserModel.findByIdAndDelete(testUser._id).then(() => {
     mongoose.connection.close();
   });

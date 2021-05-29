@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import * as Validator from '../middleware/validation'
+import * as Validator from '../middleware/validation';
 import * as ApiRedditController from '../api-controllers/api-reddit-controller';
 
 const router = Router();
