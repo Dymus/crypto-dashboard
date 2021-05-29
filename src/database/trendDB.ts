@@ -1,6 +1,9 @@
 import { TrendModel } from '../models/trend-model';
 
-export const getTrends = () => {
-  return TrendModel.find({
-  }).then((trends) => (trends ? Promise.resolve(trends) : Promise.reject()));
+// untested
+export const getTrends = async () => {
+  return TrendModel.find().then((trends) => {
+    if (trends) return trends;
+    else throw new Error('Failed to load trends');
+  });
 };

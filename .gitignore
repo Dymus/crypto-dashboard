@@ -1,5 +1,9 @@
 # keys
-keys
+keys/
+.pem
+
+# dist
+dist/
 
 # Logs
 logs

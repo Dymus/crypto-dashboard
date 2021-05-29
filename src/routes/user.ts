@@ -1,13 +1,21 @@
 import { Router } from 'express';
-import { getUserAlertNotifications, getUserAlerts, refreshUserAuthStatus, markAllUserAlertNotificationsAsViewed, setUserAlerts, removeAllAlertNotifications } from '../controllers/user-controller';
-import { isAuth } from "../controllers/auth-controller"
+
+import { isAuth } from '../middleware/auth';
+import * as Validator from '../middleware/validation';
+import * as ApiUserController from '../api-controllers/api-user-controller';
 
 const router = Router();
 
-router.post('/refreshAuth', isAuth, refreshUserAuthStatus);
-router.get('/getAlerts', isAuth, getUserAlerts);
-router.put('/setUserAlerts', isAuth, setUserAlerts);
-router.get('/getUserAlertNotifications', isAuth, getUserAlertNotifications);
-router.put('/markAllUserAlertNotificationsAsViewed', isAuth, markAllUserAlertNotificationsAsViewed)
-router.delete('/removeAllAlertNotifications', isAuth, removeAllAlertNotifications)
+router.get('/refresh-auth-status', isAuth, ApiUserController.refreshUserAuthStatus);
+
+router.get('/get-alerts', isAuth, ApiUserController.getUserAlerts);
+
+router.put('/set-user-alerts', [isAuth, Validator.validateSetUserAlerts], ApiUserController.setUserAlerts);
+
+router.get('/get-user-alert-notifications', isAuth, ApiUserController.getUserAlertNotifications);
+
+router.put('/mark-all-user-alert-notifications-as-viewed', isAuth, ApiUserController.markAllUserAlertNotificationsAsViewed);
+
+router.delete('/remove-all-alert-notifications', isAuth, ApiUserController.removeAllAlertNotifications);
+
 export default router;
