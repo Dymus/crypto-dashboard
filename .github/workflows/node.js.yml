@@ -5,7 +5,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Format codebase
+      run: npm run format
     - name: Install modules
       run: npm install
     - name: Run tests
-      run: jest
+      run: npm run test
