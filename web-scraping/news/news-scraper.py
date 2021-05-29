@@ -4,17 +4,18 @@ import datetime, time
 from bs4 import BeautifulSoup
 import requests
 import json
+from decouple import config
 
 print("Started running the script")
 
 # Acessing the Reddit API
-reddit = praw.Reddit(client_id="fEa4it1xgroveg",#my client id
-                     client_secret="UMVpzgGog9y7MnbE7CRHmKjAbbHDzA",  #your client secret
-                     user_agent="CryptoDashboard", #user agent name
-                     username = "UCNCryptoDashboard",     # your reddit username
-                     password = "UCNcryptoDASHBOARDsuperSECUREstring")     # your reddit password
+reddit = praw.Reddit(client_id=config('CLIENT_ID'),#my client id
+                     client_secret=config('CLIENT_SECRET'),  #your client secret
+                     user_agent=config('USER_AGENT'), #user agent name
+                     username="UCNCryptoDashboard",     # your reddit username
+                     password=config('PASSWORD')) # your reddit passowrd
 # MongoDB client initialization
-client = MongoClient('mongodb+srv://sa:CryptoDashboard@cryptodashboard.0obwg.mongodb.net/CryptoDashboard')
+client = MongoClient(config('MONGO_URI'))
 our_database = client['CryptoDashboard']
 news = our_database['news']
 # Specifying subreddits to scrape
@@ -62,14 +63,15 @@ while True:
         #Saving to database
         for sub in subreddits:
             for i in range(len(urls[sub])):
-                r = requests.get(urls[sub][i])
-                if r:
-                    soup = BeautifulSoup(r.content,'html.parser')
-                    image = soup.find('meta',property='og:image')
-                    image_url = image['content'] if image else 'https://www.mcleodgaming.com/wp-content/uploads/2019/05/reddit_logo-150x150.png'
-                else:
-                    image_url = 'https://www.mcleodgaming.com/wp-content/uploads/2019/05/reddit_logo-150x150.png'
-                news.insert_one({'cryptocurrency': cryptocurrency, 'scraped_at': datetime.datetime.now(), 'image' : image_url, 'top': i+1, 'subreddit': sub, 'url': urls[sub][i], 'title': titles[sub][i]})
+                if 'http' in urls[sub][i]:
+                    r = requests.get(urls[sub][i])
+                    if r:
+                        soup = BeautifulSoup(r.content,'html.parser')
+                        image = soup.find('meta',property='og:image')
+                        image_url = image['content'] if image else 'https://www.mcleodgaming.com/wp-content/uploads/2019/05/reddit_logo-150x150.png'
+                    else:
+                        image_url = 'https://www.mcleodgaming.com/wp-content/uploads/2019/05/reddit_logo-150x150.png'
+                    news.insert_one({'cryptocurrency': cryptocurrency, 'scraped_at': datetime.datetime.now(), 'image' : image_url, 'top': i+1, 'subreddit': sub, 'url': urls[sub][i], 'title': titles[sub][i]})
 
     #Wait for 1 hour            
     time.sleep(3600)

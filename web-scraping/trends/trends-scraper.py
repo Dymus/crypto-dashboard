@@ -4,21 +4,18 @@ import datetime, time
 from bs4 import BeautifulSoup
 import requests
 import json
+from decouple import config
 
 print("Started running the script")
 
 # Acessing the Reddit API
-reddit = praw.Reddit(
-    client_id="fEa4it1xgroveg",  # my client id
-    client_secret="UMVpzgGog9y7MnbE7CRHmKjAbbHDzA",  # your client secret
-    user_agent="CryptoDashboard",  # user agent name
-    username="UCNCryptoDashboard",  # your reddit username
-    password="UCNcryptoDASHBOARDsuperSECUREstring",
-)  # your reddit password
+reddit = praw.Reddit(client_id=config('CLIENT_ID'),#my client id
+                     client_secret=config('CLIENT_SECRET'),  #your client secret
+                     user_agent=config('USER_AGENT'), #user agent name
+                     username="UCNCryptoDashboard",     # your reddit username
+                     password=config('PASSWORD')) # your reddit password
 # MongoDB client initialization
-client = MongoClient(
-    "mongodb+srv://sa:CryptoDashboard@cryptodashboard.0obwg.mongodb.net/CryptoDashboard"
-)
+client = MongoClient(config('MONGO_URI'))
 our_database = client["CryptoDashboard"]
 trends = our_database["trends"]
 hots = our_database['hots']
@@ -70,13 +67,14 @@ while True:
         scores.append(submission.score)
         dates.append(submission.created_utc)
     for i in range(len(urls)):
-        r = requests.get(urls[sub][i])
-        if r:
-            soup = BeautifulSoup(requests.get(urls[i]).content,'html.parser')
-            image = soup.find('meta', property='og:image')
-            image_url = image['content'] if image else 'https://www.mcleodgaming.com/wp-content/uploads/2019/05/reddit_logo-150x150.png'
-        else:
-            image_url = 'https://www.mcleodgaming.com/wp-content/uploads/2019/05/reddit_logo-150x150.png'
-        hots.insert_one({'title': titles[i], 'score': scores[i], 'url': urls[i], 'image' : image_url})
+        if 'http' in urls[sub][i]:
+            r = requests.get(urls[sub][i])
+            if r:
+                soup = BeautifulSoup(requests.get(urls[i]).content,'html.parser')
+                image = soup.find('meta', property='og:image')
+                image_url = image['content'] if image else 'https://www.mcleodgaming.com/wp-content/uploads/2019/05/reddit_logo-150x150.png'
+            else:
+                image_url = 'https://www.mcleodgaming.com/wp-content/uploads/2019/05/reddit_logo-150x150.png'
+            hots.insert_one({'title': titles[i], 'score': scores[i], 'url': urls[i], 'image' : image_url})
     '''
     time.sleep(900)

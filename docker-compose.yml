@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  express-app:
+    build: ./express-app
+    command: sh -c "npm install && npm start"
+    working_dir: /root/express-app
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./express-app:/root/express-app:cached
+      - /root/express-app/node_modules
+
+  trends-service:
+    build: ./web-scraping/trends
+    command: sh -c "python trends-scraper.py"
+    working_dir: /root/trends-service
+    volumes:
+      - ./web-scraping/trends:/root/trends-service:cached
+
+  news-service:
+    build: ./web-scraping/news
+    command: sh -c "python news-scraper.py"
+    working_dir: /root/news-service
+    volumes:
+      - ./web-scraping/news:/root/news-service:cached
