@@ -8,7 +8,7 @@
     "build": "rm -rf ./dist && npx tsc",
     "format": "npx prettier --write ./src",
     "dev-test": "jest -i --watch",
-    "precommit-test": "jest -i ./dist/tests"
+    "precommit-test": "jest -i"
   },
   "repository": {
     "type": "git",

@@ -2,6 +2,9 @@
 keys/
 .pem
 
+# dist
+dist/
+
 # Logs
 logs
 *.log
