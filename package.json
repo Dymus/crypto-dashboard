@@ -5,10 +5,10 @@
   "main": "dist/app.js",
   "scripts": {
     "start": "ts-node-dev --respawn --files src/index.ts",
-    "build": "npx tsc",
+    "build": "rm -rf ./dist && npx tsc",
     "format": "npx prettier --write ./src",
     "dev-test": "jest -i --watch",
-    "precommit-test": "jest -i"
+    "precommit-test": "jest -i ./dist/tests"
   },
   "repository": {
     "type": "git",
