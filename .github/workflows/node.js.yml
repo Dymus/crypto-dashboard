@@ -3,6 +3,7 @@ on: push
 jobs:
   build:
     runs-on: ubuntu-latest
+    working-directory: ./express-app
     steps:
     - uses: actions/checkout@v2
     - name: Format codebase
